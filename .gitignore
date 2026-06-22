@@ -5,6 +5,8 @@ trims/
 sheets/
 out/*.mp4
 out/*.mov
+out/*.wav
+out/*.mp3
 assets/raw/*.mp4
 assets/raw/*.mov
 assets/gen/*.mp4
@@ -20,3 +22,4 @@ __pycache__/
 tools/ffglitch*/
 /tmp/
 .DS_Store
+media/
