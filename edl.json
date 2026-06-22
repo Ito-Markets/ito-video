@@ -1,0 +1,1961 @@
+{
+ "project": "itomarkets-brand-film",
+ "fps": 30,
+ "canvas": [
+  1920,
+  1080
+ ],
+ "grade_base": "ito: deep contrast, warm-neutral highlights, cool shadows, subtle grain",
+ "pool": [
+  {
+   "id": "s000",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/1E8B3675-0172-4ACA-8F7B-8CB7E78657C8.mov",
+   "in": 0.0,
+   "out": 24.705011,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "1E8B3675-0172-4ACA-8F7B-8CB7E78657C8.mov (24.7s)"
+  },
+  {
+   "id": "s001",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/2ADCBBAE-72DC-497A-87F6-CD850AADD487.mov",
+   "in": 0.0,
+   "out": 354.2,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "2ADCBBAE-72DC-497A-87F6-CD850AADD487.mov (354.2s)"
+  },
+  {
+   "id": "s002",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0023.MOV",
+   "in": 0.0,
+   "out": 9.601667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0023.MOV (9.6s)"
+  },
+  {
+   "id": "s003",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0025.MOV",
+   "in": 0.0,
+   "out": 6.765,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0025.MOV (6.8s)"
+  },
+  {
+   "id": "s004",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0034.MOV",
+   "in": 0.0,
+   "out": 10.641667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0034.MOV (10.6s)"
+  },
+  {
+   "id": "s005",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0049.MOV",
+   "in": 0.0,
+   "out": 24.333333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0049.MOV (24.3s)"
+  },
+  {
+   "id": "s006",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0109.MOV",
+   "in": 0.0,
+   "out": 21.1367,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0109.MOV (21.1s)"
+  },
+  {
+   "id": "s007",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0133.MOV",
+   "in": 0.0,
+   "out": 12.7,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0133.MOV (12.7s)"
+  },
+  {
+   "id": "s008",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0134.MOV",
+   "in": 0.0,
+   "out": 9.1,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0134.MOV (9.1s)"
+  },
+  {
+   "id": "s009",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0147.MOV",
+   "in": 0.0,
+   "out": 49.711667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0147.MOV (49.7s)"
+  },
+  {
+   "id": "s010",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0148.MOV",
+   "in": 0.0,
+   "out": 21.738333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0148.MOV (21.7s)"
+  },
+  {
+   "id": "s011",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0149 (1).MOV",
+   "in": 0.0,
+   "out": 13.77,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0149 (1).MOV (13.8s)"
+  },
+  {
+   "id": "s012",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0149.MOV",
+   "in": 0.0,
+   "out": 23.466667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0149.MOV (23.5s)"
+  },
+  {
+   "id": "s013",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0214.MOV",
+   "in": 0.0,
+   "out": 14.6,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0214.MOV (14.6s)"
+  },
+  {
+   "id": "s014",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0215.MOV",
+   "in": 0.0,
+   "out": 54.333333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0215.MOV (54.3s)"
+  },
+  {
+   "id": "s015",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0225.MOV",
+   "in": 0.0,
+   "out": 136.136667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0225.MOV (136.1s)"
+  },
+  {
+   "id": "s016",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0239.MOV",
+   "in": 0.0,
+   "out": 6.498333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0239.MOV (6.5s)"
+  },
+  {
+   "id": "s017",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0240.MOV",
+   "in": 0.0,
+   "out": 15.1,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0240.MOV (15.1s)"
+  },
+  {
+   "id": "s018",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0430 (1).MOV",
+   "in": 0.0,
+   "out": 27.536667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0430 (1).MOV (27.5s)"
+  },
+  {
+   "id": "s019",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0435.MOV",
+   "in": 0.0,
+   "out": 36.333333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0435.MOV (36.3s)"
+  },
+  {
+   "id": "s020",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0461.MOV",
+   "in": 0.0,
+   "out": 1.968333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0461.MOV (2.0s)"
+  },
+  {
+   "id": "s021",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0462.MOV",
+   "in": 0.0,
+   "out": 1.033333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0462.MOV (1.0s)"
+  },
+  {
+   "id": "s022",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0464.MOV",
+   "in": 0.0,
+   "out": 17.998333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0464.MOV (18.0s)"
+  },
+  {
+   "id": "s023",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0475.MOV",
+   "in": 0.0,
+   "out": 37.0517,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0475.MOV (37.1s)"
+  },
+  {
+   "id": "s024",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0483.MOV",
+   "in": 0.0,
+   "out": 24.638345,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0483.MOV (24.6s)"
+  },
+  {
+   "id": "s025",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0484 (1).MOV",
+   "in": 0.0,
+   "out": 51.433333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0484 (1).MOV (51.4s)"
+  },
+  {
+   "id": "s026",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0484.mov",
+   "in": 0.0,
+   "out": 22.218345,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0484.mov (22.2s)"
+  },
+  {
+   "id": "s027",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0486 (1).MOV",
+   "in": 0.0,
+   "out": 21.5667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0486 (1).MOV (21.6s)"
+  },
+  {
+   "id": "s028",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0486.mov",
+   "in": 0.0,
+   "out": 12.3267,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0486.mov (12.3s)"
+  },
+  {
+   "id": "s029",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0492.MOV",
+   "in": 0.0,
+   "out": 18.333333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0492.MOV (18.3s)"
+  },
+  {
+   "id": "s030",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0510.MOV",
+   "in": 0.0,
+   "out": 4.133333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0510.MOV (4.1s)"
+  },
+  {
+   "id": "s031",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0572.MOV",
+   "in": 0.0,
+   "out": 14.536667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0572.MOV (14.5s)"
+  },
+  {
+   "id": "s032",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0590.MOV",
+   "in": 0.0,
+   "out": 75.631667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0590.MOV (75.6s)"
+  },
+  {
+   "id": "s033",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0594.MOV",
+   "in": 0.0,
+   "out": 20.6017,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0594.MOV (20.6s)"
+  },
+  {
+   "id": "s034",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0595.MOV",
+   "in": 0.0,
+   "out": 61.935,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0595.MOV (61.9s)"
+  },
+  {
+   "id": "s035",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0596.MOV",
+   "in": 0.0,
+   "out": 16.836667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0596.MOV (16.8s)"
+  },
+  {
+   "id": "s036",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0608.MOV",
+   "in": 0.0,
+   "out": 69.883333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0608.MOV (69.9s)"
+  },
+  {
+   "id": "s037",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0609.MOV",
+   "in": 0.0,
+   "out": 10.37,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0609.MOV (10.4s)"
+  },
+  {
+   "id": "s038",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0612.MOV",
+   "in": 0.0,
+   "out": 8.533333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0612.MOV (8.5s)"
+  },
+  {
+   "id": "s039",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0613.MOV",
+   "in": 0.0,
+   "out": 8.198333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0613.MOV (8.2s)"
+  },
+  {
+   "id": "s040",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_1176.MOV",
+   "in": 0.0,
+   "out": 26.4417,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_1176.MOV (26.4s)"
+  },
+  {
+   "id": "s041",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_1184.MOV",
+   "in": 0.0,
+   "out": 33.578333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_1184.MOV (33.6s)"
+  },
+  {
+   "id": "s042",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_1188.MOV",
+   "in": 0.0,
+   "out": 458.21,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_1188.MOV (458.2s)"
+  },
+  {
+   "id": "s043",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_1189.MOV",
+   "in": 0.0,
+   "out": 292.615,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_1189.MOV (292.6s)"
+  },
+  {
+   "id": "s044",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_1190.MOV",
+   "in": 0.0,
+   "out": 61.08,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_1190.MOV (61.1s)"
+  },
+  {
+   "id": "s045",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3073.MOV",
+   "in": 0.0,
+   "out": 21.281667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_3073.MOV (21.3s)"
+  },
+  {
+   "id": "s046",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3420.MOV",
+   "in": 0.0,
+   "out": 227.7067,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_3420.MOV (227.7s)"
+  },
+  {
+   "id": "s047",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3810.MOV",
+   "in": 0.0,
+   "out": 1948.036667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_3810.MOV (1948.0s)"
+  },
+  {
+   "id": "s048",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3817.MOV",
+   "in": 0.0,
+   "out": 1536.84,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_3817.MOV (1536.8s)"
+  },
+  {
+   "id": "s049",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3818.MOV",
+   "in": 0.0,
+   "out": 1263.931667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_3818.MOV (1263.9s)"
+  },
+  {
+   "id": "s050",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3838.MOV",
+   "in": 0.0,
+   "out": 45.968333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_3838.MOV (46.0s)"
+  },
+  {
+   "id": "s051",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3842.MOV",
+   "in": 0.0,
+   "out": 356.208333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_3842.MOV (356.2s)"
+  },
+  {
+   "id": "s052",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3844.MOV",
+   "in": 0.0,
+   "out": 12.6,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_3844.MOV (12.6s)"
+  },
+  {
+   "id": "s053",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3906.MOV",
+   "in": 0.0,
+   "out": 265.961667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_3906.MOV (266.0s)"
+  },
+  {
+   "id": "s054",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_4022.MOV",
+   "in": 0.0,
+   "out": 22.311667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_4022.MOV (22.3s)"
+  },
+  {
+   "id": "s055",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_4023.MOV",
+   "in": 0.0,
+   "out": 13.206667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_4023.MOV (13.2s)"
+  },
+  {
+   "id": "s056",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_4335.MOV",
+   "in": 0.0,
+   "out": 865.378333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_4335.MOV (865.4s)"
+  },
+  {
+   "id": "s057",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_4538.MOV",
+   "in": 0.0,
+   "out": 586.296667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_4538.MOV (586.3s)"
+  },
+  {
+   "id": "s058",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_5026.MOV",
+   "in": 0.0,
+   "out": 6.833333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_5026.MOV (6.8s)"
+  },
+  {
+   "id": "s059",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_5027.MOV",
+   "in": 0.0,
+   "out": 14.466667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_5027.MOV (14.5s)"
+  },
+  {
+   "id": "s060",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_5028.MOV",
+   "in": 0.0,
+   "out": 64.1,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_5028.MOV (64.1s)"
+  },
+  {
+   "id": "s061",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_5056.MOV",
+   "in": 0.0,
+   "out": 25.201667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_5056.MOV (25.2s)"
+  },
+  {
+   "id": "s062",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_5067.MOV",
+   "in": 0.0,
+   "out": 28.7,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_5067.MOV (28.7s)"
+  },
+  {
+   "id": "s063",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_5168.MOV",
+   "in": 0.0,
+   "out": 15.3,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_5168.MOV (15.3s)"
+  },
+  {
+   "id": "s064",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/LiveCut Video (1).mp4",
+   "in": 0.0,
+   "out": 20.053333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "LiveCut Video (1).mp4 (20.1s)"
+  },
+  {
+   "id": "s065",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/LiveCut Video (10).mp4",
+   "in": 0.0,
+   "out": 20.053333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "LiveCut Video (10).mp4 (20.1s)"
+  },
+  {
+   "id": "s066",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/LiveCut Video (2).mp4",
+   "in": 0.0,
+   "out": 15.936,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "LiveCut Video (2).mp4 (15.9s)"
+  },
+  {
+   "id": "s067",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/LiveCut Video (3).mp4",
+   "in": 0.0,
+   "out": 20.053333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "LiveCut Video (3).mp4 (20.1s)"
+  },
+  {
+   "id": "s068",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/LiveCut Video (4).mp4",
+   "in": 0.0,
+   "out": 20.053333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "LiveCut Video (4).mp4 (20.1s)"
+  },
+  {
+   "id": "s069",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/LiveCut Video (7).mp4",
+   "in": 0.0,
+   "out": 20.053333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "LiveCut Video (7).mp4 (20.1s)"
+  },
+  {
+   "id": "s070",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/LiveCut Video (8).mp4",
+   "in": 0.0,
+   "out": 23.978667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "LiveCut Video (8).mp4 (24.0s)"
+  },
+  {
+   "id": "s071",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/LiveCut Video (9).mp4",
+   "in": 0.0,
+   "out": 28.522667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "LiveCut Video (9).mp4 (28.5s)"
+  },
+  {
+   "id": "s072",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/LiveCut Video.mp4",
+   "in": 0.0,
+   "out": 20.053333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "LiveCut Video.mp4 (20.1s)"
+  },
+  {
+   "id": "s073",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_03-12-2026 17-35-31_1.mp4",
+   "in": 0.0,
+   "out": 149.339274,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_03-12-2026 17-35-31_1.mp4 (149.3s)"
+  },
+  {
+   "id": "s074",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-07-2026 07-54-21_1.mp4",
+   "in": 0.0,
+   "out": 46.786145,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 07-54-21_1.mp4 (46.8s)"
+  },
+  {
+   "id": "s075",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-07-2026 07-55-27_1.mp4",
+   "in": 0.0,
+   "out": 506.88703,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 07-55-27_1.mp4 (506.9s)"
+  },
+  {
+   "id": "s076",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-07-2026 08-04-44_1.mp4",
+   "in": 0.0,
+   "out": 78.810431,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 08-04-44_1.mp4 (78.8s)"
+  },
+  {
+   "id": "s077",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-07-2026 08-53-06_1.mp4",
+   "in": 0.0,
+   "out": 109.334513,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 08-53-06_1.mp4 (109.3s)"
+  },
+  {
+   "id": "s078",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-07-2026 09-31-11_1.mp4",
+   "in": 0.0,
+   "out": 90.511791,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 09-31-11_1.mp4 (90.5s)"
+  },
+  {
+   "id": "s079",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-07-2026 09-34-30_1.mp4",
+   "in": 0.0,
+   "out": 39.488911,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 09-34-30_1.mp4 (39.5s)"
+  },
+  {
+   "id": "s080",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-07-2026 09-35-37_1.mp4",
+   "in": 0.0,
+   "out": 18.635,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 09-35-37_1.mp4 (18.6s)"
+  },
+  {
+   "id": "s081",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-07-2026 09-36-21_1.mp4",
+   "in": 0.0,
+   "out": 5.098639,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 09-36-21_1.mp4 (5.1s)"
+  },
+  {
+   "id": "s082",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-10-2026 13-38-30_1.mp4",
+   "in": 0.0,
+   "out": 48.466667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-10-2026 13-38-30_1.mp4 (48.5s)"
+  },
+  {
+   "id": "s083",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-12-2026 13-01-29_1.mp4",
+   "in": 0.0,
+   "out": 23.368333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-12-2026 13-01-29_1.mp4 (23.4s)"
+  },
+  {
+   "id": "s084",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ScreenRecording_06-13-2026 09-52-24_1.mp4",
+   "in": 0.0,
+   "out": 214.889138,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-13-2026 09-52-24_1.mp4 (214.9s)"
+  },
+  {
+   "id": "s085",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/a7212ff0d2144af9986bbb6f58e7785c.mp4",
+   "in": 0.0,
+   "out": 22.7,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "a7212ff0d2144af9986bbb6f58e7785c.mp4 (22.7s)"
+  },
+  {
+   "id": "s086",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/copy_04B8651F-97AC-40D2-95B2-9F75E2977666.mov",
+   "in": 0.0,
+   "out": 180.633333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "copy_04B8651F-97AC-40D2-95B2-9F75E2977666.mov (180.6s)"
+  },
+  {
+   "id": "s087",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/copy_52BE1276-BF19-4D4E-A8EE-79561D53D2E2.mov",
+   "in": 0.0,
+   "out": 100.8,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "copy_52BE1276-BF19-4D4E-A8EE-79561D53D2E2.mov (100.8s)"
+  },
+  {
+   "id": "s088",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/copy_6C3FBBB6-98AF-4EF1-8DC4-52167940FFE5.mov",
+   "in": 0.0,
+   "out": 264.473991,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "copy_6C3FBBB6-98AF-4EF1-8DC4-52167940FFE5.mov (264.5s)"
+  },
+  {
+   "id": "s089",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/copy_A4D76273-48FC-42F6-920C-FBC7FBB2ACDE.mov",
+   "in": 0.0,
+   "out": 19.248005,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "copy_A4D76273-48FC-42F6-920C-FBC7FBB2ACDE.mov (19.2s)"
+  },
+  {
+   "id": "s090",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/copy_AA87DDD8-BE74-46A1-9D51-B2A54DB8278A.mov",
+   "in": 0.0,
+   "out": 87.25,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "copy_AA87DDD8-BE74-46A1-9D51-B2A54DB8278A.mov (87.2s)"
+  },
+  {
+   "id": "s091",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/copy_DF5E5126-D2B5-4038-99D2-078EB29A074C.mov",
+   "in": 0.0,
+   "out": 125.366667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "copy_DF5E5126-D2B5-4038-99D2-078EB29A074C.mov (125.4s)"
+  },
+  {
+   "id": "s092",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/copy_F977A94D-E6BF-4483-B2D2-9456B2E8F4AA.mov",
+   "in": 0.0,
+   "out": 60.633334,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "copy_F977A94D-E6BF-4483-B2D2-9456B2E8F4AA.mov (60.6s)"
+  },
+  {
+   "id": "s093",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/dji_export_20260604_094245_1780580565393_compose_0.mov",
+   "in": 0.0,
+   "out": 208.841958,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "drone",
+   "rating": 3,
+   "subject": "drone",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "dji_export_20260604_094245_1780580565393_compose_0.mov (208.8s)"
+  },
+  {
+   "id": "s094",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/dji_export_20260604_101202_1780582322354_compose_0.mov",
+   "in": 0.0,
+   "out": 1046.578875,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "drone",
+   "rating": 3,
+   "subject": "drone",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "dji_export_20260604_101202_1780582322354_compose_0.mov (1046.6s)"
+  },
+  {
+   "id": "s095",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/dji_mimo_20260602_064314_20260602184314_1780582391309_video_glamour.mp4",
+   "in": 0.0,
+   "out": 1046.549333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "drone",
+   "rating": 3,
+   "subject": "drone",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "dji_mimo_20260602_064314_20260602184314_1780582391309_video_glamour.mp4 (1046.5s)"
+  },
+  {
+   "id": "s096",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ito_markets_intro.mp4",
+   "in": 0.0,
+   "out": 86.933333,
+   "speed": 1.0,
+   "section": "product",
+   "family": "product",
+   "rating": 3,
+   "subject": "product",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ito_markets_intro.mp4 (86.9s)"
+  },
+  {
+   "id": "s097",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/od_video-106_singular_display.mov",
+   "in": 0.0,
+   "out": 24.2293,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "od_video-106_singular_display.mov (24.2s)"
+  },
+  {
+   "id": "s098",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/od_video-109_singular_display.mov",
+   "in": 0.0,
+   "out": 29.8286,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "od_video-109_singular_display.mov (29.8s)"
+  },
+  {
+   "id": "s099",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/od_video-112_singular_display.mov",
+   "in": 0.0,
+   "out": 43.1929,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "od_video-112_singular_display.mov (43.2s)"
+  },
+  {
+   "id": "s100",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/od_video-115_singular_display.mov",
+   "in": 0.0,
+   "out": 56.8909,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "od_video-115_singular_display.mov (56.9s)"
+  },
+  {
+   "id": "s101",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/od_video-122_singular_display.mov",
+   "in": 0.0,
+   "out": 98.4179,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "od_video-122_singular_display.mov (98.4s)"
+  },
+  {
+   "id": "s102",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/od_video-143_singular_display.mov",
+   "in": 0.0,
+   "out": 66.068,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "od_video-143_singular_display.mov (66.1s)"
+  },
+  {
+   "id": "s103",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/od_video-281_singular_display.mov",
+   "in": 0.0,
+   "out": 119.8807,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "od_video-281_singular_display.mov (119.9s)"
+  },
+  {
+   "id": "s104",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/trim_27DCB149-A460-4DE4-9F86-E08815FDDC7C.mp4",
+   "in": 0.0,
+   "out": 66.106667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "trim_27DCB149-A460-4DE4-9F86-E08815FDDC7C.mp4 (66.1s)"
+  },
+  {
+   "id": "s105",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/trim_9E3AD625-8064-4435-B3CF-B5B38B11B81F.mp4",
+   "in": 0.0,
+   "out": 149.604717,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "trim_9E3AD625-8064-4435-B3CF-B5B38B11B81F.mp4 (149.6s)"
+  },
+  {
+   "id": "s106",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-126_singular_display.mov",
+   "in": 0.0,
+   "out": 122.48,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-126_singular_display.mov (122.5s)"
+  },
+  {
+   "id": "s107",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-134_singular_display.mov",
+   "in": 0.0,
+   "out": 180.181,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-134_singular_display.mov (180.2s)"
+  },
+  {
+   "id": "s108",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-235_singular_display.mov",
+   "in": 0.0,
+   "out": 156.108333,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-235_singular_display.mov (156.1s)"
+  },
+  {
+   "id": "s109",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-248_singular_display.mov",
+   "in": 0.0,
+   "out": 3.35,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-248_singular_display.mov (3.4s)"
+  },
+  {
+   "id": "s110",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-278_singular_display.mov",
+   "in": 0.0,
+   "out": 32.685,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-278_singular_display.mov (32.7s)"
+  },
+  {
+   "id": "s111",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-39_singular_display.mov",
+   "in": 0.0,
+   "out": 180.506667,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-39_singular_display.mov (180.5s)"
+  },
+  {
+   "id": "s112",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-64_singular_display.mov",
+   "in": 0.0,
+   "out": 128.346667,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-64_singular_display.mov (128.3s)"
+  },
+  {
+   "id": "s113",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-75_singular_display.mov",
+   "in": 0.0,
+   "out": 161.471667,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-75_singular_display.mov (161.5s)"
+  },
+  {
+   "id": "s114",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-77_singular_display.mov",
+   "in": 0.0,
+   "out": 180.006667,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-77_singular_display.mov (180.0s)"
+  },
+  {
+   "id": "s115",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-79_singular_display.mov",
+   "in": 0.0,
+   "out": 180.117,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-79_singular_display.mov (180.1s)"
+  },
+  {
+   "id": "s116",
+   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-89_singular_display.mov",
+   "in": 0.0,
+   "out": 180.095667,
+   "speed": 1.0,
+   "section": "open",
+   "family": "pov",
+   "rating": 3,
+   "subject": "pov",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "video-89_singular_display.mov (180.1s)"
+  },
+  {
+   "id": "s117",
+   "src": "/Users/affoon/Downloads/clipsfortaste/Screen Recording 2026-06-19 at 5.25.49\u202fPM.mov",
+   "in": 0.0,
+   "out": 578.65,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "Screen Recording 2026-06-19 at 5.25.49\u202fPM.mov (578.6s)"
+  },
+  {
+   "id": "s118",
+   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 07-55-27_1.mp4",
+   "in": 0.0,
+   "out": 8.0,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 07-55-27_1.mp4 (8.0s)"
+  },
+  {
+   "id": "s119",
+   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-04-44_1.mp4",
+   "in": 0.0,
+   "out": 7.306667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 08-04-44_1.mp4 (7.3s)"
+  },
+  {
+   "id": "s120",
+   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-53-06_1.mp4",
+   "in": 0.0,
+   "out": 8.006667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 08-53-06_1.mp4 (8.0s)"
+  },
+  {
+   "id": "s121",
+   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-55-23_1.mp4",
+   "in": 0.0,
+   "out": 31.254557,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 08-55-23_1.mp4 (31.3s)"
+  },
+  {
+   "id": "s122",
+   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-58-48_1.mp4",
+   "in": 0.0,
+   "out": 15.71746,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 08-58-48_1.mp4 (15.7s)"
+  },
+  {
+   "id": "s123",
+   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 09-29-14_1.mp4",
+   "in": 0.0,
+   "out": 13.367665,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 09-29-14_1.mp4 (13.4s)"
+  },
+  {
+   "id": "s124",
+   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 09-38-13_1.mp4",
+   "in": 0.0,
+   "out": 16.58415,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "screen",
+   "rating": 3,
+   "subject": "screen",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ScreenRecording_06-07-2026 09-38-13_1.mp4 (16.6s)"
+  },
+  {
+   "id": "s125",
+   "src": "/Users/affoon/Downloads/clipsfortaste/onlyHope_KLICKAUD.mp3",
+   "in": 0.0,
+   "out": 140.281701,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "onlyHope_KLICKAUD.mp3 (140.3s)"
+  },
+  {
+   "id": "s126",
+   "src": "/Users/affoon/Downloads/itovault/ito_vid.mp4",
+   "in": 0.0,
+   "out": 140.480726,
+   "speed": 1.0,
+   "section": "product",
+   "family": "product",
+   "rating": 3,
+   "subject": "product",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "ito_vid.mp4 (140.5s)"
+  },
+  {
+   "id": "s127",
+   "src": "/Users/affoon/Downloads/rawtalkingclips/2026-05-26 01-31-25.mov",
+   "in": 0.0,
+   "out": 12.166667,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "2026-05-26 01-31-25.mov (12.2s)"
+  },
+  {
+   "id": "s128",
+   "src": "/Users/affoon/Downloads/rawtalkingclips/IMG_0212.MOV",
+   "in": 0.0,
+   "out": 276.573333,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_0212.MOV (276.6s)"
+  },
+  {
+   "id": "s129",
+   "src": "/Users/affoon/Downloads/rawtalkingclips/IMG_4763.MOV",
+   "in": 0.0,
+   "out": 1652.32,
+   "speed": 1.0,
+   "section": "flex",
+   "family": "clip",
+   "rating": 3,
+   "subject": "clip",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "IMG_4763.MOV (1652.3s)"
+  }
+ ]
+}
