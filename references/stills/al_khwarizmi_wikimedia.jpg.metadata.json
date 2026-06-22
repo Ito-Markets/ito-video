@@ -1,0 +1,76 @@
+{
+  "title": "Al-Khwarizmi portrait.jpg",
+  "file_page": "https://commons.wikimedia.org/wiki/File:Al-Khwarizmi_portrait.jpg",
+  "original_url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/Al-Khwarizmi_portrait.jpg",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2020-12-06 00:07:43",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "Al-Khwarizmi portrait",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Muhammad ibn Musa al-Khwarizmi|Self-published work|Derivative versions|Works by Michel Bakni|Icons, drawing and designs Lab-ar",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "An imaginary portrait for Al-Khwarizmi derived from a soviet stamp.",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "2020-12-06",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "This file was derived from:  <a href=\"//commons.wikimedia.org/wiki/File:1983_CPA_5426.jpg\" title=\"File:1983 CPA 5426.jpg\">1983 CPA 5426.jpg</a><br>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "<bdi><a href=\"https://www.wikidata.org/wiki/Q81411358\" class=\"extiw\" title=\"d:Q81411358\"><span title=\"academic researcher in electronics engineering, a university professor in France, and activist in the Wikimedia movement\">Michel Bakni</span></a></bdi>",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  }
+}

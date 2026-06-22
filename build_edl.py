@@ -90,6 +90,19 @@ def main():
             d = dur(path)
             pool.append(clip(f"s_{label}", path, 0.0, min(d, 5.0), sec, "screen", 3, "screen", ["crush_black"], f"screen recording {label}"))
 
+    # Free stock footage downloads
+    stock = [
+        ("assets/raw/dareful_nyse_entrance.mp4", "nyse_entrance", "open", 4),
+        ("assets/raw/vidsplay_stock_exchange.mp4", "stock_exchange", "history", 4),
+        ("assets/raw/vidsplay_business_graph.mp4", "business_graph", "product", 3),
+        ("assets/raw/vidsplay_office_building.mp4", "office_building", "close", 3),
+    ]
+    for src, label, sec, rating in stock:
+        path = os.path.join(BUILD, src)
+        if os.path.exists(path):
+            d = dur(path)
+            pool.append(clip(f"st_{label}", src, 0.0, min(d, 5.0), sec, "stock", rating, "broll", ["crush_black"], f"free stock {label}"))
+
     # Raw footage selects — small subset of the best/unknown
     raw = [
         ("/Users/affoon/Downloads/allrawfootageunsorted/ito_markets_intro.mp4", "ito_intro", "open"),

@@ -299,6 +299,66 @@
    "note": "screen recording screen5"
   },
   {
+   "id": "st_nyse_entrance",
+   "src": "assets/raw/dareful_nyse_entrance.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "open",
+   "family": "stock",
+   "rating": 4,
+   "subject": "broll",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "free stock nyse_entrance"
+  },
+  {
+   "id": "st_stock_exchange",
+   "src": "assets/raw/vidsplay_stock_exchange.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "history",
+   "family": "stock",
+   "rating": 4,
+   "subject": "broll",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "free stock stock_exchange"
+  },
+  {
+   "id": "st_business_graph",
+   "src": "assets/raw/vidsplay_business_graph.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "product",
+   "family": "stock",
+   "rating": 3,
+   "subject": "broll",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "free stock business_graph"
+  },
+  {
+   "id": "st_office_building",
+   "src": "assets/raw/vidsplay_office_building.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "close",
+   "family": "stock",
+   "rating": 3,
+   "subject": "broll",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "free stock office_building"
+  },
+  {
    "id": "r_ito_intro",
    "src": "/Users/affoon/Downloads/allrawfootageunsorted/ito_markets_intro.mp4",
    "in": 0.0,
