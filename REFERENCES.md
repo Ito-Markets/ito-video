@@ -36,6 +36,17 @@ Collected for agency review on June 22, 2026. These files are references only; f
 | TMX ETF context | `references/articles/tmx_etf_context.txt` and `.html` | TMX newsroom page | Toronto/TMX historical context and official framing | Low for research notes; verify dates/claims in final script. |
 | Kiyoshi Itô source lookup | `references/articles/picryl_kiyoshi_ito.url` | PICRYL topic page | Backup source locator for archival Itô portrait | Low as a bookmark; Commons download is now primary, but verify exact credit before commercial use. |
 
+## Follow-up References From Screenshots
+
+Additional source leads visible in the user screenshots have been captured in `references/source-pages/screenshot_followup_references.md`. Highlights:
+
+- Pentagon / geopolitics briefing YouTube references for a macro-risk opening beat, with visible timestamp ranges around 11:26-11:30, 28:10-28:14, 06:45-06:49, and 0:05-0:09.
+- Archive leads for Toronto/TSE 1990 footage: Internet Archive, CBC/TSE 1990 news clips, NFB, Library and Archives Canada.
+- Free-stock search pools: Pixabay, Mixkit, Videvo, Vidsplay, and Dareful.
+- Prediction-market/social references: Polymarket, Robin Hanson, Metaculus, and related Reddit communities.
+
+Licensing posture: keep all of these as reference leads until exact source files are cleared or recreated.
+
 ## Recommended 15-Second Reference Sequence
 
 1. Geopolitics / macro premise: abstract world map, institutional news plates, subtle event-risk headline treatment.

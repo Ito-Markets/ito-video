@@ -19,14 +19,15 @@ MW, MH = 2208, 1242
 TAG = "format=yuv420p,setparams=colorspace=bt709:color_primaries=bt709:color_trc=bt709"
 
 # Narrative sections: name -> (target_seconds, motion_zoom, cut_intensity)
+# Timed to the 76s ElevenLabs voiceover.
 SECTIONS = [
     ("open",      8,  0.04, 0.0),
-    ("history",  18,  0.06, 0.0),
-    ("math",     20,  0.07, 0.0),
-    ("problem",  12,  0.08, 0.0),
-    ("solution", 20,  0.09, 0.0),
-    ("product",  22,  0.08, 0.0),
-    ("close",    12,  0.05, 0.0),
+    ("history",  10,  0.06, 0.0),
+    ("math",     12,  0.07, 0.0),
+    ("problem",   8,  0.08, 0.0),
+    ("solution", 14,  0.09, 0.0),
+    ("product",  14,  0.08, 0.0),
+    ("close",    10,  0.05, 0.0),
 ]
 
 
