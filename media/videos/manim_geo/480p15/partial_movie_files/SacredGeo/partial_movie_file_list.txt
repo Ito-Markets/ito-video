@@ -1,0 +1,4 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/affoon/GitHub/Ito-Markets/ito-video/media/videos/manim_geo/480p15/partial_movie_files/SacredGeo/1584795214_2150163488_2466013950.mp4'
+file 'file:/Users/affoon/GitHub/Ito-Markets/ito-video/media/videos/manim_geo/480p15/partial_movie_files/SacredGeo/4072820271_2932754531_3527616592.mp4'
+file 'file:/Users/affoon/GitHub/Ito-Markets/ito-video/media/videos/manim_geo/480p15/partial_movie_files/SacredGeo/4072820271_1518250134_3017328118.mp4'

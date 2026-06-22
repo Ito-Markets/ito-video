@@ -118,7 +118,7 @@ class MarketWeb(Scene):
             r = rng.uniform(1.8, 3.2)
             p = r * np.array([np.cos(ang), np.sin(ang), 0.0])
             pos.append(p)
-            nodes.add(Dot(point=p, radius=0.04, color=WHITE, opacity=0.7))
+            nodes.add(Dot(point=p, radius=0.04, color=WHITE, fill_opacity=0.7))
 
         edges = VGroup()
         for i in range(n):

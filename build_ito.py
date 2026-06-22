@@ -42,7 +42,7 @@ def resolve_src(s):
     return os.path.join(BUILD, src)
 
 
-def pick_for_section(used, sec_name, prefs):
+def pick_for_section(used, used_src, sec_name, prefs):
     def score(s):
         sc = s["rating"] * 10
         if s.get("section") == sec_name:
@@ -150,7 +150,7 @@ def main():
 
         while run < target_sec - 0.3:
             remaining = target_sec - run
-            s = pick_for_section(used, sec_name, prefs)
+            s = pick_for_section(used, used_src, sec_name, prefs)
             if s is None:
                 break
             T = min(remaining, max(1.0, target_sec / 3.0))
