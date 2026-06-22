@@ -15,8 +15,8 @@ Collected for agency review on June 22, 2026. These files are references only; f
 |---|---|---|---|---|---|
 | Al-Khwarizmi portrait | `references/stills/al_khwarizmi_wikimedia.jpg` | Wikimedia Commons: `https://commons.wikimedia.org/wiki/File:Al-Khwarizmi_portrait.jpg` | Opening math-heritage montage, with text such as “From algebra...” | Very low | Metadata sidecar saved. Verify final credit/public-domain status before broadcast export. |
 | Leonhard Euler portrait | `references/stills/euler_portrait_wikimedia.jpg` | Wikimedia Commons: `https://commons.wikimedia.org/wiki/File:Leonhard_Euler_2.jpg` | Math-foundations montage before Itô | Very low | Metadata sidecar saved. Public-domain portrait candidate. |
-| Kiyoshi Itô portrait | Not downloaded; source bookmarked | PICRYL topic: `https://picryl.com/topics/kiyoshi+ito`; Commons candidate: `https://commons.wikimedia.org/wiki/File:Kiyoshi_Ito_1954.jpg` | Full-screen title-card portrait with equation overlay / Ken Burns slow push | Low once original archive status is verified | Source pages are bookmarked. Download was not forced because Wikimedia/PICRYL access throttled or blocked during collection. Agency should pull original archive-quality still and confirm credit line. |
-| Farnese Atlas | Not downloaded; source bookmarked | Wikimedia candidate: `https://commons.wikimedia.org/wiki/File:Farnese_Atlas.jpg`; museum/stock alternatives recommended | 2-3s slow push-in for Atlas/world-model motif | Low for public-domain sculpture stills; stock recommended for cinematic angle | Use public-domain museum still only if photo rights are verified; otherwise license Alamy/Pond5/museum image. |
+| Kiyoshi Itô portrait | `references/stills/kiyoshi_ito_1954_wikimedia.jpg` | Wikimedia Commons: `https://commons.wikimedia.org/wiki/File:Kiyoshi_Ito_1954.jpg`; PICRYL topic retained: `https://picryl.com/topics/kiyoshi+ito` | Full-screen title-card portrait with equation overlay / Ken Burns slow push | Low | Downloaded via Commons upload URL on June 22, 2026 with metadata sidecar. Commons metadata reports public domain; still verify original archive credit and personality/publicity considerations before broadcast export. |
+| Farnese Atlas | `references/stills/farnese_atlas_wikimedia.jpg` | Wikimedia Commons: `https://commons.wikimedia.org/wiki/File:Farnese_Atlas.jpg`; original Flickr credit in metadata | 2-3s slow push-in for Atlas/world-model motif | Low | Downloaded via Commons upload URL on June 22, 2026 with metadata sidecar. Commons metadata reports public domain; use stock/museum-licensed alternate only if a more cinematic angle is needed. |
 
 ## Video / Clip References
 
@@ -34,7 +34,7 @@ Collected for agency review on June 22, 2026. These files are references only; f
 |---|---|---|---|---|
 | ETF historical context | `references/articles/investopedia_etf_history.txt` and `.html` | Investopedia ETF history article | Fact-checking ETF evolution and first-product framing | Low for research notes; do not copy article text into final film. |
 | TMX ETF context | `references/articles/tmx_etf_context.txt` and `.html` | TMX newsroom page | Toronto/TMX historical context and official framing | Low for research notes; verify dates/claims in final script. |
-| Kiyoshi Itô source lookup | `references/articles/picryl_kiyoshi_ito.url` | PICRYL topic page | Source locator for archival Itô portrait | Low as a bookmark; verify image page before commercial use. |
+| Kiyoshi Itô source lookup | `references/articles/picryl_kiyoshi_ito.url` | PICRYL topic page | Backup source locator for archival Itô portrait | Low as a bookmark; Commons download is now primary, but verify exact credit before commercial use. |
 
 ## Recommended 15-Second Reference Sequence
 
@@ -56,12 +56,12 @@ Collected for agency review on June 22, 2026. These files are references only; f
 1. Al-Khwarizmi portrait from Wikimedia Commons.
 2. Euler portrait from Wikimedia Commons.
 3. Original agency-made stochastic calculus animation inspired by the YouTube reference.
-4. Licensed stock / museum-cleared Atlas still.
+4. Farnese Atlas public-domain Commons still, or licensed stock/museum alternate if a more cinematic angle is needed.
 
 ## Commercial Clearance Notes
 
 - Treat all YouTube video as reference-only until written clearance is obtained.
 - For the final film, prefer original animation for math/data/order-book visuals.
-- For Atlas, use a rights-cleared museum or stock image with exact credit line.
-- For Itô, verify original archive/public-domain status and exact credit before using the portrait in final deliverables.
+- For Atlas, Commons metadata reports public domain; verify final credit line or use licensed stock/museum imagery for a different angle.
+- For Itô, Commons metadata reports public domain, but verify original archive credit and personality/publicity considerations before using the portrait in final deliverables.
 - Keep the tone institutional: deliberate cuts, negative space for typography, no retail-trading or gambling visual language.

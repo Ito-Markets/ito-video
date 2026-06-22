@@ -96,6 +96,9 @@ def main():
         ("assets/raw/vidsplay_stock_exchange.mp4", "stock_exchange", "history", 4),
         ("assets/raw/vidsplay_business_graph.mp4", "business_graph", "product", 3),
         ("assets/raw/vidsplay_office_building.mp4", "office_building", "close", 3),
+        ("assets/raw/archive_vista_nyse_open.mp4", "vista_nyse_open", "open", 4),
+        ("assets/raw/archive_vista_nyse_floor.mp4", "vista_nyse_floor", "history", 4),
+        ("assets/raw/archive_behind_ticker_tape_open.mp4", "behind_ticker", "history", 4),
     ]
     for src, label, sec, rating in stock:
         path = os.path.join(BUILD, src)

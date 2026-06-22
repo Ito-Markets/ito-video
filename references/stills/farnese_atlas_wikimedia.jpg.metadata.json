@@ -1,0 +1,96 @@
+{
+  "source_page": "https://commons.wikimedia.org/wiki/File:Farnese_Atlas.jpg",
+  "direct_url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Farnese_Atlas.jpg",
+  "title": "File:Farnese Atlas.jpg",
+  "mime": "image/jpeg",
+  "size_bytes": 19037838,
+  "width": 3805,
+  "height": 4994,
+  "timestamp": "2020-11-26T10:18:33Z",
+  "uploader": "IppolitoN",
+  "extmetadata": {
+    "DateTime": {
+      "value": "2020-11-26 10:18:33",
+      "source": "mediawiki-metadata",
+      "hidden": ""
+    },
+    "ObjectName": {
+      "value": "Farnese Atlas",
+      "source": "mediawiki-metadata"
+    },
+    "CommonsMetadataExtension": {
+      "value": 1.2,
+      "source": "extension",
+      "hidden": ""
+    },
+    "Categories": {
+      "value": "Farnese Atlas|Files with coordinates missing SDC location of creation|Flickr images reviewed by FlickreviewR 2|PD-author-FlickrPDM|Files from Carlo Raso Flickr stream",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "Assessments": {
+      "value": "",
+      "source": "commons-categories",
+      "hidden": ""
+    },
+    "GPSLatitude": {
+      "value": "40.853637",
+      "source": "commons-desc-page"
+    },
+    "GPSLongitude": {
+      "value": "14.250308",
+      "source": "commons-desc-page"
+    },
+    "GPSMapDatum": {
+      "value": "WGS-84",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "ImageDescription": {
+      "value": "The \"Farnese Atlas\" (2nd century AD, copy of an original of 1st century BC) - Exhibition \"The hours of the Sun. Geometry and Astronomy of ancient Roman sundials\", up to January 31, 2019 at Archaeological Museum of Naples",
+      "source": "commons-desc-page"
+    },
+    "DateTimeOriginal": {
+      "value": "2018-09-30 10:34:20",
+      "source": "commons-desc-page"
+    },
+    "Credit": {
+      "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.flickr.com/photos/70125105@N06/43280509630/\">https://www.flickr.com/photos/70125105@N06/43280509630/</a>",
+      "source": "commons-desc-page"
+    },
+    "Artist": {
+      "value": "Carlo Raso",
+      "source": "commons-desc-page"
+    },
+    "LicenseShortName": {
+      "value": "Public domain",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "UsageTerms": {
+      "value": "Public domain",
+      "source": "commons-desc-page"
+    },
+    "AttributionRequired": {
+      "value": "false",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Copyrighted": {
+      "value": "False",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "Restrictions": {
+      "value": "",
+      "source": "commons-desc-page",
+      "hidden": ""
+    },
+    "License": {
+      "value": "pd",
+      "source": "commons-templates",
+      "hidden": ""
+    }
+  },
+  "usage_note": "Reference only until final credit/license is verified by agency."
+}

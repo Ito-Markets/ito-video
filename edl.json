@@ -359,6 +359,51 @@
    "note": "free stock office_building"
   },
   {
+   "id": "st_vista_nyse_open",
+   "src": "assets/raw/archive_vista_nyse_open.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "open",
+   "family": "stock",
+   "rating": 4,
+   "subject": "broll",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "free stock vista_nyse_open"
+  },
+  {
+   "id": "st_vista_nyse_floor",
+   "src": "assets/raw/archive_vista_nyse_floor.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "history",
+   "family": "stock",
+   "rating": 4,
+   "subject": "broll",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "free stock vista_nyse_floor"
+  },
+  {
+   "id": "st_behind_ticker",
+   "src": "assets/raw/archive_behind_ticker_tape_open.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "history",
+   "family": "stock",
+   "rating": 4,
+   "subject": "broll",
+   "grade": [
+    "crush_black"
+   ],
+   "note": "free stock behind_ticker"
+  },
+  {
    "id": "r_ito_intro",
    "src": "/Users/affoon/Downloads/allrawfootageunsorted/ito_markets_intro.mp4",
    "in": 0.0,
