@@ -21,6 +21,11 @@ assets/stills/*.jpg
 assets/music/*.wav
 assets/music/*.mp3
 assets/fonts/*.ttf
+!assets/fonts/LibreBaskerville.ttf
+!assets/fonts/IBMPlexMono-Regular.ttf
+!assets/fonts/IBMPlexMono-Light.ttf
+!assets/fonts/IBMPlexMono-Medium.ttf
+!assets/fonts/IBMPlexMono-Bold.ttf
 assets/ref_broll/
 clips_v3/*.mp4
 timeline/clips/*.mp4

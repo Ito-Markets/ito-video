@@ -47,7 +47,9 @@ The package also includes optional inserts not used in the 24.9s reference assem
 ## Regeneration
 
 ```bash
+# Optional: point to the original music file if it is not in assets/music/
+export ITO_RESEARCH_MUSIC_PATH=/path/to/onlyHope_KLICKAUD.mp3
 python3 gen_research_grant.py
 ```
 
-This rebuilds all clips, `timeline/edl.json`, `timeline/audio/music_stem.mp3`, and `out/ito_research_grant.mp4`.
+The script is repo-relative and rebuilds all clips, `timeline/edl.json`, `timeline/audio/music_stem.mp3`, and `out/ito_research_grant.mp4`.

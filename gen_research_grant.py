@@ -33,14 +33,15 @@ DARK_GOLD = (100, 86, 56)
 FAINT = (50, 48, 44)        # very dim text
 INK = (17, 24, 39)          # #111827
 
-REPO = Path("/home/ubuntu/repos/ito-video")
-FONT_BASK = str(REPO / "assets/fonts/LibreBaskerville.ttf")
-FONT_BASK_ITALIC = str(REPO / "assets/fonts/LibreBaskerville.ttf")
-FONT_BASK_BOLD = str(REPO / "assets/fonts/LibreBaskerville.ttf")
-FONT_MONO = str(REPO / "assets/fonts/IBMPlexMono-Regular.ttf")
-FONT_MONO_LIGHT = str(REPO / "assets/fonts/IBMPlexMono-Light.ttf")
-FONT_MONO_MEDIUM = str(REPO / "assets/fonts/IBMPlexMono-Medium.ttf")
-FONT_MONO_BOLD = str(REPO / "assets/fonts/IBMPlexMono-Bold.ttf")
+REPO = Path(__file__).resolve().parent
+FONTS_DIR = REPO / "assets" / "fonts"
+FONT_BASK = FONTS_DIR / "LibreBaskerville.ttf"
+FONT_BASK_ITALIC = FONTS_DIR / "LibreBaskerville-Italic.ttf"
+FONT_BASK_BOLD = FONTS_DIR / "LibreBaskerville-Bold.ttf"
+FONT_MONO = FONTS_DIR / "IBMPlexMono-Regular.ttf"
+FONT_MONO_LIGHT = FONTS_DIR / "IBMPlexMono-Light.ttf"
+FONT_MONO_MEDIUM = FONTS_DIR / "IBMPlexMono-Medium.ttf"
+FONT_MONO_BOLD = FONTS_DIR / "IBMPlexMono-Bold.ttf"
 
 CLIPS_DIR = REPO / "timeline" / "clips"
 AUDIO_DIR = REPO / "timeline" / "audio"
@@ -58,11 +59,16 @@ def ensure_dirs():
         d.mkdir(parents=True, exist_ok=True)
 
 
-def load_font(path, size):
-    try:
-        return ImageFont.truetype(path, size)
-    except Exception:
-        return ImageFont.load_default()
+def load_font(path, size, fallback_path=None):
+    paths = [Path(path)]
+    if fallback_path is not None:
+        paths.append(Path(fallback_path))
+    for font_path in paths:
+        try:
+            return ImageFont.truetype(str(font_path), size)
+        except Exception:
+            continue
+    return ImageFont.load_default()
 
 
 def make_bg(opacity_texture=0.0, texture_img=None):
@@ -296,7 +302,7 @@ def gen_003_problem():
     """'Most of the data is inaccessible.' — contemplative typography."""
     duration = 3.0
 
-    font_main = load_font(FONT_BASK_ITALIC, 72)
+    font_main = load_font(FONT_BASK_ITALIC, 72, fallback_path=FONT_BASK)
     font_label = load_font(FONT_MONO_LIGHT, 16)
 
     def frame_func(i, t, n):
@@ -957,12 +963,32 @@ def gen_013_endcard():
 # AUDIO + ASSEMBLY
 # ═══════════════════════════════════════════════════════════════════════
 
+def find_music_source():
+    """Locate the source music file without assuming a VM-specific path."""
+    candidates = []
+    env_path = os.environ.get("ITO_RESEARCH_MUSIC_PATH")
+    if env_path:
+        candidates.append(Path(env_path))
+    candidates.extend([
+        REPO / "assets" / "music" / "onlyHope_KLICKAUD.mp3",
+        REPO / "onlyHope_KLICKAUD.mp3",
+    ])
+    attachments_dir = Path.home() / "attachments"
+    if attachments_dir.exists():
+        candidates.extend(attachments_dir.glob("**/onlyHope_KLICKAUD.mp3"))
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return None
+
+
 def prepare_audio(total_duration):
     """Trim the music track to video duration and apply fade."""
-    src = Path("/home/ubuntu/attachments/0d7dfa8c-ef5b-4866-9809-67704f5fb8c2/onlyHope_KLICKAUD.mp3")
+    src = find_music_source()
     out = AUDIO_DIR / "music_stem.mp3"
 
-    if not src.exists():
+    if src is None:
         print("  ⚠ Music file not found, skipping audio")
         return None
 
