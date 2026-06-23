@@ -1,0 +1,575 @@
+{
+  "created_at": "2026-06-23T01:39:22.752072",
+  "local_pack_root": "/Users/affoon/.hermes/profiles/ito/tmp/ito-video-ref-pack-20260623-013617",
+  "intended_remote_root": "/Users/affoon/GitHub/Ito-Markets/ito-video/references",
+  "host_note": "Built on Mac mini; designed to rsync to MacBook Pro over TB5/bridge at 10.42.0.1.",
+  "clip_results": [
+    {
+      "slug": "geo_hegseth_pentagon_open",
+      "category": "geopolitics",
+      "url": "https://www.youtube.com/watch?v=rhgGVyZ7TZw",
+      "start": "00:11:26",
+      "end": "00:11:30",
+      "why": "Pentagon podium / official geopolitical-risk beat; full-screen or split-screen.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/geo_hegseth_pentagon_open.mp4",
+      "size": 1449444,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "duration": "4.000000"
+          }
+        ]
+      },
+      "seconds": 17.7
+    },
+    {
+      "slug": "geo_caine_map_pointer",
+      "category": "geopolitics",
+      "url": "https://www.youtube.com/watch?v=rhgGVyZ7TZw",
+      "start": "00:28:10",
+      "end": "00:28:14",
+      "why": "Operational map / laser-pointer shot; strong data-driven macro-risk visual.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/geo_caine_map_pointer.mp4",
+      "size": 1642149,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "duration": "4.000000"
+          }
+        ]
+      },
+      "seconds": 13.7
+    },
+    {
+      "slug": "geo_hegseth_not_endless",
+      "category": "geopolitics",
+      "url": "https://www.youtube.com/watch?v=-5E0VJbR4Ak",
+      "start": "00:06:45",
+      "end": "00:06:49",
+      "why": "Crisp Pentagon podium framing with negative space for basket/index text.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/geo_hegseth_not_endless.mp4",
+      "size": 771287,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30000/1001",
+            "duration": "4.004000"
+          }
+        ]
+      },
+      "seconds": 11.0
+    },
+    {
+      "slug": "geo_pentagon_air_ops",
+      "category": "geopolitics",
+      "url": "https://www.youtube.com/watch?v=fZdTNOGjjlc",
+      "start": "00:00:05",
+      "end": "00:00:09",
+      "why": "Aircraft / carrier ops as clean macro-volatility insert.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/geo_pentagon_air_ops.mp4",
+      "size": 731004,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1280,
+            "height": 720,
+            "r_frame_rate": "30/1",
+            "duration": "4.000000"
+          }
+        ]
+      },
+      "seconds": 14.4
+    },
+    {
+      "slug": "politics_trump_wh_podium",
+      "category": "politics",
+      "url": "https://www.youtube.com/watch?v=C_2zs9xsrqY",
+      "start": "00:02:40",
+      "end": "00:02:44",
+      "why": "White House podium shot instantly reads U.S. political event risk.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/politics_trump_wh_podium.mp4",
+      "size": 825581,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30000/1001",
+            "duration": "4.004000"
+          }
+        ]
+      },
+      "seconds": 14.5
+    },
+    {
+      "slug": "politics_trump_policy_gesture",
+      "category": "politics",
+      "url": "https://www.youtube.com/watch?v=C_2zs9xsrqY",
+      "start": "01:36:13",
+      "end": "01:36:17",
+      "why": "Podium gesture / political volatility overlay space.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/politics_trump_policy_gesture.mp4",
+      "size": 536525,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30000/1001",
+            "duration": "4.004000"
+          }
+        ]
+      },
+      "seconds": 11.5
+    },
+    {
+      "slug": "politics_official_sotu",
+      "category": "politics",
+      "url": "https://www.youtube.com/watch?v=8PQ7l905aVM",
+      "start": "00:00:30",
+      "end": "00:00:34",
+      "why": "Official formal podium / institutional political-risk beat.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/politics_official_sotu.mp4",
+      "size": 159801,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30000/1001",
+            "duration": "4.004000"
+          }
+        ]
+      },
+      "seconds": 12.2
+    },
+    {
+      "slug": "politics_trump_entry",
+      "category": "politics",
+      "url": "https://www.youtube.com/watch?v=8OEoQezEeb8",
+      "start": "00:00:11",
+      "end": "00:00:15",
+      "why": "Dynamic podium entry / live policy-event energy.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/politics_trump_entry.mp4",
+      "size": 492536,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30000/1001",
+            "duration": "4.004000"
+          }
+        ]
+      },
+      "seconds": 13.9
+    },
+    {
+      "slug": "ai_jensen_gtc_welcome",
+      "category": "AI",
+      "url": "https://www.youtube.com/watch?v=lQHK61IDFH4",
+      "start": "00:04:41",
+      "end": "00:04:45",
+      "why": "Jensen on pristine GTC stage; premium frontier-tech momentum.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/ai_jensen_gtc_welcome.mp4",
+      "size": 927260,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "60000/1001",
+            "duration": "4.004000"
+          }
+        ]
+      },
+      "seconds": 6.7
+    },
+    {
+      "slug": "ai_jensen_nvlink_reveal",
+      "category": "AI",
+      "url": "https://www.youtube.com/watch?v=lQHK61IDFH4",
+      "start": "00:26:17",
+      "end": "00:26:21",
+      "why": "Jensen stage reveal + slide graphics for AI repricing.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/ai_jensen_nvlink_reveal.mp4",
+      "size": 357857,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "60000/1001",
+            "duration": "4.004000"
+          }
+        ]
+      },
+      "seconds": 8.9
+    },
+    {
+      "slug": "ai_jensen_thinking_machine",
+      "category": "AI",
+      "url": "https://www.youtube.com/watch?v=TLzna9__DnI",
+      "start": "00:34:12",
+      "end": "00:34:16",
+      "why": "Grace Blackwell / Thinking Machine stage beat; premium AI basket visual.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/ai_jensen_thinking_machine.mp4",
+      "size": 1297693,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "60000/1001",
+            "duration": "4.004000"
+          }
+        ]
+      },
+      "seconds": 8.7
+    },
+    {
+      "slug": "ai_dario_jensen_satya",
+      "category": "AI",
+      "url": "https://www.youtube.com/watch?v=bl7vHnOgEg0",
+      "start": "00:00:28",
+      "end": "00:00:32",
+      "why": "Dario / Jensen / Satya partnership-stage visual; AI ecosystem repricing.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/ai_dario_jensen_satya.mp4",
+      "size": 551228,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30000/1001",
+            "duration": "4.004000"
+          }
+        ]
+      },
+      "seconds": 5.6
+    },
+    {
+      "slug": "math_ito_visualization_lemma",
+      "category": "math-heritage",
+      "url": "https://www.youtube.com/watch?v=dUvZ8m3QpeI",
+      "start": "00:10:18",
+      "end": "00:10:23",
+      "why": "It\u00f4 lemma / stochastic visualization clip for mathematical lineage.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/math_ito_visualization_lemma.mp4",
+      "size": 1259337,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "duration": "5.000000"
+          }
+        ]
+      },
+      "seconds": 10.5
+    },
+    {
+      "slug": "math_ito_visualization_paths",
+      "category": "math-heritage",
+      "url": "https://www.youtube.com/watch?v=dUvZ8m3QpeI",
+      "start": "00:14:05",
+      "end": "00:14:10",
+      "why": "Stochastic paths / randomness-to-finance visual layer.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/math_ito_visualization_paths.mp4",
+      "size": 1356616,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "30/1",
+            "duration": "5.000000"
+          }
+        ]
+      },
+      "seconds": 10.8
+    },
+    {
+      "slug": "quant_jim_simons_numberphile",
+      "category": "quant-heritage",
+      "url": "https://www.youtube.com/watch?v=QNznD9hMEh0",
+      "start": "00:00:30",
+      "end": "00:00:36",
+      "why": "Jim Simons talking-head as quant-revolution bridge; screen for exact line before final use.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/quant_jim_simons_numberphile.mp4",
+      "size": 2419052,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "25/1",
+            "duration": "6.000000"
+          }
+        ]
+      },
+      "seconds": 12.4
+    },
+    {
+      "slug": "etf_tmx_35th_anniversary",
+      "category": "ETF-history",
+      "url": "https://www.youtube.com/watch?v=p0at8eQ_lU8",
+      "start": "00:00:00",
+      "end": "00:00:06",
+      "why": "TMX / ETF anniversary context for Toronto 1990 origin beat.",
+      "status": "ok",
+      "file": "references/clips/institutional-refresh-20260623-013617/etf_tmx_35th_anniversary.mp4",
+      "size": 2677642,
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "width": 1920,
+            "height": 1080,
+            "r_frame_rate": "60000/1001",
+            "duration": "6.006000"
+          }
+        ]
+      },
+      "seconds": 5.5
+    }
+  ],
+  "page_results": [
+    {
+      "slug": "airwallex_sparks_lbb",
+      "url": "https://lbbonline.com/news/airwallex-uncommon-behind-the-work",
+      "capture": "blocked",
+      "error": "HTTPError: HTTP Error 403: Forbidden"
+    },
+    {
+      "slug": "airwallex_sparks_creative_moment",
+      "url": "https://www.creativemoment.co/airwallex-launches-first-global-brand-platform-build-the-future-with-uncommon-as-it-targets-next-phase-of-growth",
+      "capture": "ok",
+      "bytes": 68707,
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "slug": "tendril_wealthsimple_card",
+      "url": "https://tendril.studio/work/wealthsimple-card",
+      "capture": "ok",
+      "bytes": 45626,
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "slug": "wealthsimple_card_behance",
+      "url": "https://www.behance.net/gallery/228463187/Wealthsimple-Credit-Card",
+      "capture": "ok",
+      "bytes": 500000,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "slug": "rolex_watches_wonders_radical",
+      "url": "https://www.radicalmedia.com/work/rolex-watches-wonders",
+      "capture": "ok",
+      "bytes": 34813,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "slug": "rolex_timeless_eighty_five",
+      "url": "https://www.imeightyfive.com/rolex-timeless",
+      "capture": "ok",
+      "bytes": 181831,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "slug": "qavim_rolex_deep_black",
+      "url": "https://qavim.com/work/rolex-deep-black",
+      "capture": "ok",
+      "bytes": 42082,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "slug": "lee_miller_trade_republic_motion",
+      "url": "https://www.a-leemiller.com/portfolio/trade-republic-motion-design",
+      "capture": "ok",
+      "bytes": 500000,
+      "content_type": "text/html"
+    },
+    {
+      "slug": "contra_valantis_modular_motion",
+      "url": "https://contra.com/p/MWRs3Acm-valantis-modular-motion-for-modern-de-fi",
+      "capture": "ok",
+      "bytes": 168897,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "slug": "nasir_kareem_blai_launch",
+      "url": "https://nasirkareem.myportfolio.com/blai-product-launch-video-saas",
+      "capture": "ok",
+      "bytes": 171285,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "slug": "uox_studio_fintech_reference",
+      "url": "https://www.uox.studio/project/a4635675-053b-41d9-9069-25a44ff93f6e3",
+      "capture": "ok",
+      "bytes": 51610,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "slug": "reuters_khamenei_iran",
+      "url": "https://www.reuters.com/world/middle-east/irans-ali-khamenei-who-based-iron-rule-fiery-hostility-us-israel-dies-86-2026-03-01/",
+      "capture": "blocked",
+      "error": "HTTPError: HTTP Error 401: HTTP Forbidden"
+    },
+    {
+      "slug": "ap_iran_israel_us",
+      "url": "https://apnews.com/article/iran-israel-us-march-9-2026-b2aa51ef51d4b57103ffee0c95bc2ff7",
+      "capture": "ok",
+      "bytes": 500000,
+      "content_type": "text/html;charset=UTF-8"
+    },
+    {
+      "slug": "bloomberg_iran_war_markets",
+      "url": "https://www.bloomberg.com/opinion/newsletters/2026-03-09/iran-war-a-longer-conflict-is-already-here-for-markets",
+      "capture": "blocked",
+      "error": "HTTPError: HTTP Error 403: Forbidden"
+    },
+    {
+      "slug": "reuters_oil_iran_us_tensions",
+      "url": "https://www.reuters.com/business/energy/oil-prices-lose-ground-hopes-de-escalation-us-iran-tensions-2026-02-18/",
+      "capture": "blocked",
+      "error": "HTTPError: HTTP Error 401: HTTP Forbidden"
+    }
+  ],
+  "style_refs": [
+    {
+      "slug": "airwallex_sparks_lbb",
+      "url": "https://lbbonline.com/news/airwallex-uncommon-behind-the-work",
+      "note": "Airwallex SPARKS / Uncommon. Premium one-shot brand film reference: ideas, ambition, restrained institutional energy."
+    },
+    {
+      "slug": "airwallex_sparks_creative_moment",
+      "url": "https://www.creativemoment.co/airwallex-launches-first-global-brand-platform-build-the-future-with-uncommon-as-it-targets-next-phase-of-growth",
+      "note": "Secondary Airwallex SPARKS writeup; good for creative rationale and platform language."
+    },
+    {
+      "slug": "tendril_wealthsimple_card",
+      "url": "https://tendril.studio/work/wealthsimple-card",
+      "note": "Wealthsimple Credit Card CG / Tendril. Ultra-clean fintech product motion and evergreen asset toolkit reference."
+    },
+    {
+      "slug": "wealthsimple_card_behance",
+      "url": "https://www.behance.net/gallery/228463187/Wealthsimple-Credit-Card",
+      "note": "Behance gallery for still frames / motion-system breakdown."
+    },
+    {
+      "slug": "rolex_watches_wonders_radical",
+      "url": "https://www.radicalmedia.com/work/rolex-watches-wonders",
+      "note": "Rolex-level premium product/heritage pacing reference."
+    },
+    {
+      "slug": "rolex_timeless_eighty_five",
+      "url": "https://www.imeightyfive.com/rolex-timeless",
+      "note": "Luxury watch motion / restrained timelessness reference."
+    },
+    {
+      "slug": "qavim_rolex_deep_black",
+      "url": "https://qavim.com/work/rolex-deep-black",
+      "note": "High-contrast luxury CGI/color reference."
+    },
+    {
+      "slug": "lee_miller_trade_republic_motion",
+      "url": "https://www.a-leemiller.com/portfolio/trade-republic-motion-design",
+      "note": "Fintech motion design portfolio; useful for clean UI/data motion."
+    },
+    {
+      "slug": "contra_valantis_modular_motion",
+      "url": "https://contra.com/p/MWRs3Acm-valantis-modular-motion-for-modern-de-fi",
+      "note": "DeFi/fintech modular motion reference; screen for what to adapt vs avoid."
+    },
+    {
+      "slug": "nasir_kareem_blai_launch",
+      "url": "https://nasirkareem.myportfolio.com/blai-product-launch-video-saas",
+      "note": "SaaS launch-video motion reference; check typography and product sequencing."
+    },
+    {
+      "slug": "uox_studio_fintech_reference",
+      "url": "https://www.uox.studio/project/a4635675-053b-41d9-9069-25a44ff93f6e3",
+      "note": "Studio portfolio reference from search pass."
+    }
+  ],
+  "headline_refs": [
+    {
+      "slug": "reuters_khamenei_iran",
+      "url": "https://www.reuters.com/world/middle-east/irans-ali-khamenei-who-based-iron-rule-fiery-hostility-us-israel-dies-86-2026-03-01/",
+      "note": "War/conflict headline montage candidate; verify current availability before commercial edit."
+    },
+    {
+      "slug": "ap_iran_israel_us",
+      "url": "https://apnews.com/article/iran-israel-us-march-9-2026-b2aa51ef51d4b57103ffee0c95bc2ff7",
+      "note": "AP macro-shock headline candidate."
+    },
+    {
+      "slug": "bloomberg_iran_war_markets",
+      "url": "https://www.bloomberg.com/opinion/newsletters/2026-03-09/iran-war-a-longer-conflict-is-already-here-for-markets",
+      "note": "Bloomberg market-impact headline; likely paywall/licensing risk."
+    },
+    {
+      "slug": "reuters_oil_iran_us_tensions",
+      "url": "https://www.reuters.com/business/energy/oil-prices-lose-ground-hopes-de-escalation-us-iran-tensions-2026-02-18/",
+      "note": "Oil / macro repricing headline montage candidate."
+    }
+  ],
+  "rights_note": "Reference-only sourcing pack. Agency/editor must clear final commercial rights; public/government/Commons sources still require attribution and final verification."
+}
