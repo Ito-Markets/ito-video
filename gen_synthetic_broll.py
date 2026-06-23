@@ -218,6 +218,16 @@ def gen_names_montage():
             "-c", "copy", out
         ], check=False)
         print(f"OK names_montage ({len(parts) * 2.5}s)")
+        # Clean up temp part files
+        for p in parts:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+        try:
+            os.remove(concat_file)
+        except OSError:
+            pass
 
 
 def gen_fragment_venues():
@@ -236,7 +246,7 @@ def gen_fragment_venues():
 
 
 def gen_stock_exchange_trim():
-    """Trim a usable segment from the Internet Archive NYSE footage."""
+    """Trim usable segments from the Internet Archive NYSE footage."""
     src = os.path.join(BUILD, "assets", "raw", "archive_behind_ticker_tape_open.mp4")
     if not os.path.exists(src):
         print("SKIP stock_exchange_trim: no source")
@@ -245,6 +255,10 @@ def gen_stock_exchange_trim():
         ("vidsplay_stock_exchange", 30, 5),
         ("archive_vista_nyse_floor", 60, 5),
         ("archive_vista_nyse_open", 120, 5),
+        ("problem_traders", 180, 8),
+        ("solution_floor", 240, 8),
+        ("solution_trading", 300, 8),
+        ("product_exchange", 360, 6),
     ]:
         out = os.path.join(OUT, f"broll_{name}.mp4")
         cmd = [

@@ -2,11 +2,12 @@
 """
 build_ito.py — narrative assembler for the ItoMarkets institutional brand film v2.
 1920x1080, 30fps, zero-repeat scheduler.
-Reads edl.json, renders each select with motion + grade, concatenates to out/rough_cut.mp4.
+Reads edl.json, renders each select with motion + grade, then uses xfade to
+produce smooth crossfade transitions between clips in out/rough_cut.mp4.
 
 v2 changes:
 - Tighter section timing synced to voiceover beats
-- Crossfade transitions between clips
+- Real crossfade transitions via xfade filter (not fade-to-black)
 - Ordered asset placement for narrative flow
 - More precise cut lengths
 """
@@ -53,6 +54,8 @@ SECTION_MAX_DUR = {
     "open": 4.0, "history": 5.0, "math": 3.5,
     "problem": 8.0, "solution": 8.8, "product": 6.0, "close": 8.0,
 }
+
+XFADE_DUR = 0.5  # crossfade duration between clips
 
 
 def resolve_src(s):
@@ -101,7 +104,7 @@ def grade_chain(tags):
     return ",".join(chain)
 
 
-def render(s, idx, T, out_path, xfade_in=0.0, xfade_out=0.0):
+def render(s, idx, T, out_path):
     src = resolve_src(s)
     if not os.path.exists(src):
         print(f"  MISSING {src}")
@@ -120,23 +123,17 @@ def render(s, idx, T, out_path, xfade_in=0.0, xfade_out=0.0):
     sec_cfg = next((cfg for cfg in SECTIONS if cfg[0] == sec_name), SECTIONS[-1])
     zoom = sec_cfg[2]
 
-    # v2: Add crossfade in/out
-    fade_filters = ""
-    if xfade_in > 0:
-        fade_filters += f",fade=t=in:st=0:d={xfade_in:.2f}"
-    if xfade_out > 0:
-        fade_filters += f",fade=t=out:st={T - xfade_out:.2f}:d={xfade_out:.2f}"
-
-    # Skip motion for pre-rendered synthetic clips (titles, endcard, etc.)
+    # Clips with grade tags get full motion pipeline (upscale, Ken Burns, color grade).
+    # Clips with empty grade (titles, endcard) get simplified scale-only path.
     if s.get("grade"):
         fc = (f"[0:v]{rot}scale={MW}:{MH}:force_original_aspect_ratio=increase,"
               f"crop={MW}:{MH},setsar=1,setpts={ptsf:.4f}*PTS,fps=30,"
               f"{motion_expr(idx, T, zoom)},scale={CW}:{CH},setsar=1,format=gbrp,"
-              f"{grade_chain(s.get('grade', []))},{TAG}{fade_filters}[v]")
+              f"{grade_chain(s.get('grade', []))},{TAG}[v]")
     else:
         fc = (f"[0:v]{rot}scale={CW}:{CH}:force_original_aspect_ratio=increase,"
               f"crop={CW}:{CH},setsar=1,setpts={ptsf:.4f}*PTS,fps=30,"
-              f"format=gbrp,{TAG}{fade_filters}[v]")
+              f"format=gbrp,{TAG}[v]")
 
     cmd = ["ffmpeg", "-nostdin", "-y", "-loglevel", "error",
            "-ss", f"{t_in:.3f}", "-t", f"{dur_src:.3f}", "-i", src,
@@ -145,6 +142,72 @@ def render(s, idx, T, out_path, xfade_in=0.0, xfade_out=0.0):
            "-pix_fmt", "yuv420p", out_path]
     r = subprocess.run(cmd, capture_output=True, text=True)
     return r.returncode == 0 and os.path.exists(out_path), r.stderr
+
+
+def xfade_concat(trim_paths, durations, xfade_dur, output):
+    """Use ffmpeg xfade filter to crossfade between clips with real blending."""
+    n = len(trim_paths)
+    if n == 0:
+        return
+    if n == 1:
+        subprocess.run(["cp", trim_paths[0], output], check=True)
+        return
+
+    # Build xfade filter chain: [0:v][1:v]xfade=...[v01]; [v01][2:v]xfade=...[v02]; ...
+    inputs = []
+    for p in trim_paths:
+        inputs.extend(["-i", p])
+
+    filters = []
+    offsets = []
+    cumulative = 0.0
+    for i in range(n - 1):
+        offset = cumulative + durations[i] - xfade_dur
+        offsets.append(offset)
+        cumulative = offset
+
+        if i == 0:
+            src_a = "[0:v]"
+        else:
+            src_a = f"[v{i-1}{i}]"
+
+        src_b = f"[{i+1}:v]"
+        out_label = f"[v{i}{i+1}]"
+
+        if i == n - 2:
+            out_label = "[vout]"
+
+        filters.append(
+            f"{src_a}{src_b}xfade=transition=fade:duration={xfade_dur:.2f}:"
+            f"offset={offset:.3f}{out_label}"
+        )
+
+    fc = ";".join(filters)
+    cmd = [
+        "ffmpeg", "-nostdin", "-y", "-loglevel", "error",
+    ] + inputs + [
+        "-filter_complex", fc,
+        "-map", "[vout]", "-an",
+        "-r", "30", "-c:v", "libx264", "-preset", "veryfast", "-crf", "19",
+        "-pix_fmt", "yuv420p", output,
+    ]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        print(f"  xfade failed ({r.stderr.strip()[:200]}), falling back to concat")
+        concat_fallback(trim_paths, output)
+    else:
+        print(f"  xfade OK -> {output}")
+
+
+def concat_fallback(trim_paths, output):
+    """Simple concat fallback if xfade fails."""
+    concat_file = os.path.join(BUILD, "concat.txt")
+    with open(concat_file, "w") as f:
+        for p in trim_paths:
+            f.write(f"file '{p}'\n")
+    subprocess.run(["ffmpeg", "-nostdin", "-y", "-loglevel", "error",
+                    "-f", "concat", "-safe", "0", "-i", concat_file,
+                    "-c", "copy", output], check=False)
 
 
 def main():
@@ -181,20 +244,16 @@ def main():
             avail_dur = s["out"] - s["in"]
             max_dur = SECTION_MAX_DUR.get(sec_name, 4.0)
             if sec_name == "close" and s["id"] == "c_endcard":
-                max_dur = 8.0  # endcard gets full duration
+                max_dur = 8.0
             T = min(remaining, avail_dur, max_dur)
 
             T = max(T, 1.0)
 
-            # v2: Apply crossfade at clip boundaries
-            xfade_in = xfade_dur if idx > 0 else 0.0
-            xfade_out = xfade_dur if run + T < target_sec - 1.0 else 0.0
-
             outp = os.path.join(TRIMS, f"{idx:03d}_{sec_name}_{s['id']}.mp4")
-            ok, err = render(s, idx, T, outp, xfade_in, xfade_out)
+            ok, err = render(s, idx, T, outp)
             if ok:
                 used.add(s["id"])
-                timeline.append((sec_name, s["id"], T))
+                timeline.append((sec_name, s["id"], T, outp))
                 run += T
                 print(f"{idx:03d} {sec_name:10} {s['id']:18} {T:5.1f}s  [{run:5.1f}/{target_sec}s]")
                 idx += 1
@@ -203,16 +262,17 @@ def main():
                 used.add(s["id"])
                 break
 
-    concat_file = os.path.join(BUILD, "concat.txt")
-    with open(concat_file, "w") as f:
-        for i, (sec, sid, _) in enumerate(timeline):
-            f.write(f"file '{os.path.join(TRIMS, f'{i:03d}_{sec}_{sid}.mp4')}'\n")
-
+    # v2: Use xfade for real crossfade transitions between all clips
+    trim_paths = [t[3] for t in timeline]
+    durations = [t[2] for t in timeline]
     final = os.path.join(OUT, "rough_cut.mp4")
-    subprocess.run(["ffmpeg", "-nostdin", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
-                    "-i", concat_file, "-c", "copy", final], check=False)
-    total = sum(T for _, _, T in timeline)
-    print(f"\nsegs: {len(timeline)}  TIMELINE: {total:.1f}s -> {final}")
+
+    print(f"\nassembling {len(timeline)} segments with xfade crossfades...")
+    xfade_concat(trim_paths, durations, XFADE_DUR, final)
+
+    total = sum(T for _, _, T, _ in timeline)
+    effective = total - XFADE_DUR * max(0, len(timeline) - 1)
+    print(f"segs: {len(timeline)}  raw: {total:.1f}s  effective (with xfade): {effective:.1f}s -> {final}")
 
 
 if __name__ == "__main__":
