@@ -23,6 +23,12 @@ assets/music/*.mp3
 assets/fonts/*.ttf
 assets/ref_broll/
 clips_v3/*.mp4
+timeline/clips/*.mp4
+timeline/audio/*.mp3
+timeline/edl.json
+out/ito_research_grant_package.zip
+delivery/
+delivery_test/
 .env.hermes
 .env
 *.log
