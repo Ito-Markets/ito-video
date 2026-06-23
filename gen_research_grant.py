@@ -46,6 +46,7 @@ FONT_MONO_BOLD = FONTS_DIR / "IBMPlexMono-Bold.ttf"
 CLIPS_DIR = REPO / "timeline" / "clips"
 AUDIO_DIR = REPO / "timeline" / "audio"
 OUT_DIR = REPO / "out"
+REF_CLIPS_DIR = REPO / "references" / "clips" / "institutional-refresh-20260623-013617"
 
 # Rule of thirds grid positions
 THIRD_X1 = W // 3          # 640
@@ -202,6 +203,46 @@ def load_logo():
     return None
 
 
+def extract_ref_frame(clip_name, time_offset=1.0):
+    """Extract a single frame from a reference clip as a PIL Image."""
+    clip_path = REF_CLIPS_DIR / clip_name
+    if not clip_path.exists():
+        return None
+    tmp_path = Path(f"/tmp/ref_frame_{clip_name}.jpg")
+    subprocess.run([
+        "ffmpeg", "-nostdin", "-y", "-loglevel", "error",
+        "-ss", str(time_offset),
+        "-i", str(clip_path),
+        "-frames:v", "1", "-q:v", "2",
+        str(tmp_path)
+    ], check=True)
+    if tmp_path.exists():
+        img = Image.open(tmp_path).convert("RGB")
+        tmp_path.unlink()
+        return img
+    return None
+
+
+def overlay_ref_clip(base_img, ref_frame, opacity=0.12, desaturate=True, tint_color=None):
+    """Blend a reference frame into a base image as a subtle backdrop."""
+    if ref_frame is None:
+        return base_img
+    ref = ref_frame.copy().resize((W, H), Image.LANCZOS)
+    if desaturate:
+        ref = ref.convert("L")
+        ref_arr = np.array(ref, dtype=np.float32)
+        if tint_color:
+            r = np.clip(ref_arr * (tint_color[0] / 255) * 0.5, 0, 255)
+            g = np.clip(ref_arr * (tint_color[1] / 255) * 0.5, 0, 255)
+            b = np.clip(ref_arr * (tint_color[2] / 255) * 0.5, 0, 255)
+        else:
+            r = np.clip(ref_arr * 0.25, 0, 255)
+            g = np.clip(ref_arr * 0.23, 0, 255)
+            b = np.clip(ref_arr * 0.20, 0, 255)
+        ref = Image.fromarray(np.stack([r, g, b], axis=-1).astype(np.uint8))
+    return Image.blend(base_img, ref, opacity)
+
+
 # ═══════════════════════════════════════════════════════════════════════
 # CLIP GENERATORS
 # ═══════════════════════════════════════════════════════════════════════
@@ -249,13 +290,18 @@ def gen_002_grant_title():
     """ITÔ RESEARCH GRANT — small caps, wide tracking, fades in."""
     duration = 2.5
     scroll_tex = load_scroll_texture()
+    ref_ito_lemma = extract_ref_frame("math_ito_visualization_lemma.mp4", 2.0)
 
-    font = load_font(FONT_MONO_MEDIUM, 28)
-    font_sub = load_font(FONT_MONO_LIGHT, 18)
+    font = load_font(FONT_MONO_MEDIUM, 32)
+    font_sub = load_font(FONT_MONO_LIGHT, 24)
 
     def frame_func(i, t, n):
         tex_opacity = 0.04 if scroll_tex else 0
         img = make_bg(tex_opacity, scroll_tex)
+        # Overlay Itô lemma visualization as subtle backdrop
+        backdrop_alpha = ease_out(min(t / 0.6, 1.0)) * 0.10
+        img = overlay_ref_clip(img, ref_ito_lemma, opacity=backdrop_alpha,
+                               tint_color=GOLD)
         draw = ImageDraw.Draw(img)
 
         alpha = ease_out(min(t / 0.5, 1.0))
@@ -301,12 +347,16 @@ def gen_002_grant_title():
 def gen_003_problem():
     """'Most of the data is inaccessible.' — contemplative typography."""
     duration = 3.0
+    ref_tmx = extract_ref_frame("etf_tmx_35th_anniversary.mp4", 2.0)
 
-    font_main = load_font(FONT_BASK_ITALIC, 72, fallback_path=FONT_BASK)
-    font_label = load_font(FONT_MONO_LIGHT, 16)
+    font_main = load_font(FONT_BASK_ITALIC, 78, fallback_path=FONT_BASK)
+    font_label = load_font(FONT_MONO_LIGHT, 20)
 
     def frame_func(i, t, n):
         img = Image.new("RGB", (W, H), BG)
+        # Subtle exchange floor backdrop
+        backdrop_a = ease_out(min(t / 0.5, 1.0)) * 0.08
+        img = overlay_ref_clip(img, ref_tmx, opacity=backdrop_a)
         draw = ImageDraw.Draw(img)
 
         alpha = ease_out(min(t / 0.35, 1.0))
@@ -409,9 +459,10 @@ def gen_004_scroll_texture():
 def gen_005_offerings():
     """Three offerings appearing in sequence with gold dashes."""
     duration = 3.5
+    ref_jensen = extract_ref_frame("ai_jensen_thinking_machine.mp4", 1.5)
 
-    font = load_font(FONT_MONO, 36)
-    font_label = load_font(FONT_MONO_LIGHT, 16)
+    font = load_font(FONT_MONO, 42)
+    font_label = load_font(FONT_MONO_LIGHT, 20)
 
     offerings = [
         "L2 orderbooks.",
@@ -421,6 +472,8 @@ def gen_005_offerings():
 
     def frame_func(i, t, n):
         img = Image.new("RGB", (W, H), BG)
+        backdrop_a = ease_out(min(t / 0.4, 1.0)) * 0.07
+        img = overlay_ref_clip(img, ref_jensen, opacity=backdrop_a)
         draw = ImageDraw.Draw(img)
 
         label_alpha = ease_out(min(t / 0.2, 1.0))
@@ -430,7 +483,7 @@ def gen_005_offerings():
             int(GOLD[2] * label_alpha + BG[2] * (1 - label_alpha)),
         )
         x_base = int(W * 0.12)
-        draw.text((x_base, THIRD_Y1 - 80), "WHAT THE GRANT PROVIDES",
+        draw.text((x_base, THIRD_Y1 - 90), "WHAT THE GRANT PROVIDES",
                    font=font_label, fill=label_color)
 
         for idx, text in enumerate(offerings):
@@ -452,9 +505,9 @@ def gen_005_offerings():
                 int(GOLD[2] * alpha + BG[2] * (1 - alpha)),
             )
 
-            y = THIRD_Y1 - 30 + idx * 70
+            y = THIRD_Y1 - 30 + idx * 80
             draw.text((x_base, y), "—", font=font, fill=gold_color)
-            draw.text((x_base + 60, y), text, font=font, fill=text_color)
+            draw.text((x_base + 70, y), text, font=font, fill=text_color)
 
         img = add_vignette(img, 0.2)
         return img
@@ -522,15 +575,88 @@ def gen_006_brownian():
     return gen_clip("006_brownian", duration, frame_func)
 
 
+def gen_006b_inspirational_montage():
+    """Fast-cut montage of sourced reference clips — builds energy.
+    ~0.6s per clip, desaturated with gold tint, cross-dissolving."""
+    duration = 3.0
+
+    montage_clips = [
+        ("quant_jim_simons_numberphile.mp4", 1.0),
+        ("math_ito_visualization_lemma.mp4", 2.5),
+        ("ai_jensen_thinking_machine.mp4", 1.8),
+        ("geo_hegseth_pentagon_open.mp4", 1.2),
+        ("etf_tmx_35th_anniversary.mp4", 3.0),
+        ("math_ito_visualization_paths.mp4", 1.5),
+        ("ai_dario_jensen_satya.mp4", 1.5),
+        ("politics_official_sotu.mp4", 1.5),
+        ("geo_pentagon_air_ops.mp4", 1.5),
+        ("ai_jensen_gtc_welcome.mp4", 2.0),
+    ]
+
+    frames_cache = []
+    for clip_name, offset in montage_clips:
+        frame = extract_ref_frame(clip_name, offset)
+        if frame is not None:
+            frames_cache.append(frame)
+
+    if not frames_cache:
+        frames_cache = [Image.new("RGB", (W, H), BG)]
+
+    n_clips = len(frames_cache)
+    font_label = load_font(FONT_MONO_LIGHT, 14)
+
+    def frame_func(i, t, n):
+        clip_duration_pct = 1.0 / n_clips
+        current_idx = min(int(t / clip_duration_pct), n_clips - 1)
+        local_t = (t - current_idx * clip_duration_pct) / clip_duration_pct
+
+        ref = frames_cache[current_idx].copy().resize((W, H), Image.LANCZOS)
+
+        # Desaturate and apply dark gold tint
+        ref_gray = ref.convert("L")
+        arr = np.array(ref_gray, dtype=np.float32)
+        r = np.clip(arr * 0.30 + BG[0] * 0.4, 0, 255)
+        g = np.clip(arr * 0.27 + BG[1] * 0.4, 0, 255)
+        b = np.clip(arr * 0.23 + BG[2] * 0.4, 0, 255)
+        tinted = Image.fromarray(np.stack([r, g, b], axis=-1).astype(np.uint8))
+
+        # Cross-dissolve: fade in quickly, hold, brief fade out
+        if local_t < 0.15:
+            alpha = ease_out(local_t / 0.15)
+        elif local_t > 0.85:
+            alpha = ease_out((1 - local_t) / 0.15)
+        else:
+            alpha = 1.0
+
+        bg_img = Image.new("RGB", (W, H), BG)
+        img = Image.blend(bg_img, tinted, alpha * 0.7)
+
+        # Very subtle gold line at bottom third
+        draw = ImageDraw.Draw(img)
+        line_alpha = alpha * 0.3
+        line_c = (int(GOLD[0] * line_alpha), int(GOLD[1] * line_alpha), int(GOLD[2] * line_alpha))
+        draw.line([(int(W * 0.1), THIRD_Y2), (int(W * 0.9), THIRD_Y2)],
+                   fill=line_c, width=1)
+
+        img = add_vignette(img, 0.45)
+        return img
+
+    return gen_clip("006b_inspirational_montage", duration, frame_func)
+
+
 def gen_007_endpoints():
     """'23 endpoints.' — large, centered, authoritative."""
     duration = 3.0
 
-    font_big = load_font(FONT_BASK, 120)
-    font_sub = load_font(FONT_MONO_LIGHT, 24)
+    ref_paths = extract_ref_frame("math_ito_visualization_paths.mp4", 2.5)
+
+    font_big = load_font(FONT_BASK, 130)
+    font_sub = load_font(FONT_MONO_LIGHT, 30)
 
     def frame_func(i, t, n):
         img = Image.new("RGB", (W, H), BG)
+        backdrop_a = ease_out(min(t / 0.5, 1.0)) * 0.08
+        img = overlay_ref_clip(img, ref_paths, opacity=backdrop_a, tint_color=GOLD)
         draw = ImageDraw.Draw(img)
 
         alpha = ease_out(min(t / 0.3, 1.0))
@@ -582,13 +708,16 @@ def gen_007_endpoints():
 def gen_008_audience():
     """Words appear one by one, centered, each replacing the previous."""
     duration = 3.0
+    ref_pentagon = extract_ref_frame("geo_hegseth_pentagon_open.mp4", 1.5)
 
     words = ["Researchers.", "Students.", "Quants.", "Builders."]
-    font = load_font(FONT_BASK, 80)
-    font_label = load_font(FONT_MONO_LIGHT, 14)
+    font = load_font(FONT_BASK, 96)
+    font_label = load_font(FONT_MONO_LIGHT, 18)
 
     def frame_func(i, t, n):
         img = Image.new("RGB", (W, H), BG)
+        backdrop_a = ease_out(min(t / 0.4, 1.0)) * 0.06
+        img = overlay_ref_clip(img, ref_pentagon, opacity=backdrop_a)
         draw = ImageDraw.Draw(img)
 
         # Section label
@@ -598,7 +727,7 @@ def gen_008_audience():
             int(GOLD[1] * label_alpha + BG[1] * (1 - label_alpha)),
             int(GOLD[2] * label_alpha + BG[2] * (1 - label_alpha)),
         )
-        draw.text((int(W * 0.12), THIRD_Y1 - 80), "WHO SHOULD APPLY",
+        draw.text((int(W * 0.12), THIRD_Y1 - 90), "WHO SHOULD APPLY",
                    font=font_label, fill=label_color)
 
         # Each word gets ~25% of the timeline
@@ -641,8 +770,8 @@ def gen_009_research_areas():
     duration = 3.5
     scroll_tex = load_scroll_texture()
 
-    font = load_font(FONT_MONO, 18)
-    font_label = load_font(FONT_MONO_LIGHT, 14)
+    font = load_font(FONT_MONO, 24)
+    font_label = load_font(FONT_MONO_LIGHT, 18)
 
     areas = [
         "Cross-venue price discovery",
@@ -780,8 +909,8 @@ def gen_011_api_scopes():
     """API scopes in monospace — technical authority."""
     duration = 3.0
 
-    font = load_font(FONT_MONO, 22)
-    font_label = load_font(FONT_MONO_LIGHT, 14)
+    font = load_font(FONT_MONO, 28)
+    font_label = load_font(FONT_MONO_LIGHT, 18)
 
     scopes = [
         "baskets:read",
@@ -830,8 +959,8 @@ def gen_011_api_scopes():
                 int(WHITE[1] * sub_alpha + BG[1] * (1 - sub_alpha)),
                 int(WHITE[2] * sub_alpha + BG[2] * (1 - sub_alpha)),
             )
-            font_tiny = load_font(FONT_MONO_LIGHT, 14)
-            draw.text((x_base, THIRD_Y1 + 4 * 50 + 20),
+            font_tiny = load_font(FONT_MONO_LIGHT, 18)
+            draw.text((x_base, THIRD_Y1 + 4 * 55 + 25),
                        "120 reads/min  ·  10 writes/min",
                        font=font_tiny, fill=sub_c)
 
@@ -845,11 +974,15 @@ def gen_012_url():
     """itomarkets.com/research-program — clean, definitive."""
     duration = 2.5
 
-    font = load_font(FONT_MONO, 28)
-    font_label = load_font(FONT_MONO_LIGHT, 14)
+    ref_simons = extract_ref_frame("quant_jim_simons_numberphile.mp4", 2.0)
+
+    font = load_font(FONT_MONO, 34)
+    font_label = load_font(FONT_MONO_LIGHT, 20)
 
     def frame_func(i, t, n):
         img = Image.new("RGB", (W, H), BG)
+        backdrop_a = ease_out(min(t / 0.5, 1.0)) * 0.06
+        img = overlay_ref_clip(img, ref_simons, opacity=backdrop_a)
         draw = ImageDraw.Draw(img)
 
         alpha = ease_out(min(t / 0.4, 1.0))
@@ -933,7 +1066,7 @@ def gen_013_endcard():
                    fill=line_color, width=1)
 
         # Tagline below
-        font_tag = load_font(FONT_MONO_LIGHT, 14)
+        font_tag = load_font(FONT_MONO_LIGHT, 20)
         if t > 0.25:
             tag_alpha = ease_out(min((t - 0.25) / 0.3, 1.0)) * fade_in
             tag_c = (
@@ -1204,6 +1337,7 @@ def main():
         ("004_scroll_texture",    gen_004_scroll_texture,    2.5),
         ("005_offerings",         gen_005_offerings,         3.5),
         ("006_brownian",          gen_006_brownian,          2.5),
+        ("006b_inspirational_montage", gen_006b_inspirational_montage, 3.0),
         ("007_endpoints",         gen_007_endpoints,         3.0),
         ("008_audience",          gen_008_audience,          3.0),
         ("009_research_areas",    gen_009_research_areas,    3.5),
@@ -1223,17 +1357,19 @@ def main():
             "duration": duration,
         })
 
-    # Reference assembly: tighter 9-clip cut for ~25s
+    # Reference assembly: 10-clip cut with buildup arc (~27s)
+    # Structure: quiet open → problem → math beauty → MONTAGE energy → authority → resolve
     assembly_ids = [
-        "001_void_gold_line",    # 3.0s  — void + gold line
-        "002_grant_title",       # 2.5s  — identity
-        "003_problem",           # 3.0s  — problem statement
-        "005_offerings",         # 3.5s  — what you get
-        "006_brownian",          # 2.5s  — mathematical beauty
-        "007_endpoints",         # 3.0s  — hero stat
-        "008_audience",          # 3.0s  — who it's for
-        "012_url",               # 2.5s  — CTA
-        "013_endcard",           # 3.5s  — logo resolve
+        "001_void_gold_line",             # 3.0s  — quiet void + gold line
+        "002_grant_title",                # 2.5s  — identity reveal
+        "003_problem",                    # 3.0s  — problem statement
+        "005_offerings",                  # 3.5s  — what you get
+        "006_brownian",                   # 2.5s  — mathematical beauty
+        "006b_inspirational_montage",     # 3.0s  — fast cut energy buildup
+        "007_endpoints",                  # 3.0s  — hero stat (peak authority)
+        "008_audience",                   # 3.0s  — who it's for
+        "012_url",                        # 2.5s  — CTA
+        "013_endcard",                    # 3.5s  — logo resolve
     ]
     assembly_clips = [c for c in all_clips_info if c["id"] in assembly_ids]
     # Preserve order
