@@ -203,6 +203,14 @@ def load_logo():
     return None
 
 
+def load_cropped_logo():
+    """Load the cropped Itô wordmark logo."""
+    p = REPO / "assets/brand/ito_transparent_logo_cropped.png"
+    if p.exists():
+        return Image.open(p).convert("RGBA")
+    return None
+
+
 def extract_ref_frame(clip_name, time_offset=1.0):
     """Extract a single frame from a reference clip as a PIL Image."""
     clip_path = REF_CLIPS_DIR / clip_name
@@ -287,18 +295,18 @@ def gen_001_void_gold_line():
 
 
 def gen_002_grant_title():
-    """ITÔ RESEARCH GRANT — small caps, wide tracking, fades in."""
+    """Itô logo centered → 'Research Grant' below → tagline."""
     duration = 2.5
     scroll_tex = load_scroll_texture()
     ref_ito_lemma = extract_ref_frame("math_ito_visualization_lemma.mp4", 2.0)
+    cropped_logo = load_cropped_logo()
 
-    font = load_font(FONT_MONO_MEDIUM, 32)
-    font_sub = load_font(FONT_MONO_LIGHT, 24)
+    font_grant = load_font(FONT_MONO_MEDIUM, 28)
+    font_sub = load_font(FONT_MONO_LIGHT, 26)
 
     def frame_func(i, t, n):
         tex_opacity = 0.04 if scroll_tex else 0
         img = make_bg(tex_opacity, scroll_tex)
-        # Overlay Itô lemma visualization as subtle backdrop
         backdrop_alpha = ease_out(min(t / 0.6, 1.0)) * 0.10
         img = overlay_ref_clip(img, ref_ito_lemma, opacity=backdrop_alpha,
                                tint_color=GOLD)
@@ -306,23 +314,39 @@ def gen_002_grant_title():
 
         alpha = ease_out(min(t / 0.5, 1.0))
 
-        text = "I T Ô   R E S E A R C H   G R A N T"
-        text_color = (
+        # Itô cropped logo centered — scale to ~500px wide
+        if cropped_logo:
+            cl = cropped_logo.copy()
+            cl_w, cl_h = cl.size
+            target_w = 500
+            logo_scale = target_w / cl_w
+            new_cl_w = int(cl_w * logo_scale)
+            new_cl_h = int(cl_h * logo_scale)
+            cl = cl.resize((new_cl_w, new_cl_h), Image.LANCZOS)
+
+            cl_arr = np.array(cl)
+            cl_arr[:, :, 3] = (cl_arr[:, :, 3].astype(np.float32) * alpha).astype(np.uint8)
+            cl = Image.fromarray(cl_arr)
+
+            logo_x = (W - new_cl_w) // 2
+            logo_y = H // 2 - new_cl_h - 20
+            img.paste(cl, (logo_x, logo_y), cl)
+
+        # "R E S E A R C H   G R A N T" below logo
+        grant_text = "R E S E A R C H   G R A N T"
+        grant_color = (
             int(WHITE[0] * alpha + BG[0] * (1 - alpha)),
             int(WHITE[1] * alpha + BG[1] * (1 - alpha)),
             int(WHITE[2] * alpha + BG[2] * (1 - alpha)),
         )
+        gbbox = font_grant.getbbox(grant_text)
+        gtw = gbbox[2] - gbbox[0]
+        draw.text(((W - gtw) // 2, H // 2 + 10), grant_text,
+                   font=font_grant, fill=grant_color)
 
-        bbox = font.getbbox(text)
-        tw = bbox[2] - bbox[0]
-        x = (W - tw) // 2
-        y = THIRD_Y1
-
-        draw.text((x, y), text, font=font, fill=text_color)
-
-        # Subtitle
+        # Tagline below
         if t > 0.3:
-            sub_alpha = ease_out(min((t - 0.3) / 0.4, 1.0)) * 0.6
+            sub_alpha = ease_out(min((t - 0.3) / 0.4, 1.0)) * 0.7
             sub_c = (
                 int(WHITE[0] * sub_alpha + BG[0] * (1 - sub_alpha)),
                 int(WHITE[1] * sub_alpha + BG[1] * (1 - sub_alpha)),
@@ -331,10 +355,11 @@ def gen_002_grant_title():
             sub = "Open data for prediction market research."
             sbbox = font_sub.getbbox(sub)
             stw = sbbox[2] - sbbox[0]
-            draw.text(((W - stw) // 2, y + 50), sub, font=font_sub, fill=sub_c)
+            draw.text(((W - stw) // 2, H // 2 + 55), sub,
+                       font=font_sub, fill=sub_c)
 
-        # Gold line at lower third
-        line_y = THIRD_Y2
+        # Gold line
+        line_y = H // 2 + 100
         line_c = (int(GOLD[0] * alpha * 0.5), int(GOLD[1] * alpha * 0.5), int(GOLD[2] * alpha * 0.5))
         draw.line([(int(W * 0.3), line_y), (int(W * 0.7), line_y)], fill=line_c, width=1)
 
@@ -459,7 +484,7 @@ def gen_004_scroll_texture():
 def gen_005_offerings():
     """Three offerings appearing in sequence with gold dashes."""
     duration = 3.5
-    ref_jensen = extract_ref_frame("ai_jensen_thinking_machine.mp4", 1.5)
+    ref_tmx_offering = extract_ref_frame("etf_tmx_35th_anniversary.mp4", 4.0)
 
     font = load_font(FONT_MONO, 42)
     font_label = load_font(FONT_MONO_LIGHT, 20)
@@ -473,7 +498,7 @@ def gen_005_offerings():
     def frame_func(i, t, n):
         img = Image.new("RGB", (W, H), BG)
         backdrop_a = ease_out(min(t / 0.4, 1.0)) * 0.07
-        img = overlay_ref_clip(img, ref_jensen, opacity=backdrop_a)
+        img = overlay_ref_clip(img, ref_tmx_offering, opacity=backdrop_a)
         draw = ImageDraw.Draw(img)
 
         label_alpha = ease_out(min(t / 0.2, 1.0))
@@ -583,14 +608,12 @@ def gen_006b_inspirational_montage():
     montage_clips = [
         ("quant_jim_simons_numberphile.mp4", 1.0),
         ("math_ito_visualization_lemma.mp4", 2.5),
-        ("ai_jensen_thinking_machine.mp4", 1.8),
-        ("geo_hegseth_pentagon_open.mp4", 1.2),
         ("etf_tmx_35th_anniversary.mp4", 3.0),
         ("math_ito_visualization_paths.mp4", 1.5),
-        ("ai_dario_jensen_satya.mp4", 1.5),
-        ("politics_official_sotu.mp4", 1.5),
-        ("geo_pentagon_air_ops.mp4", 1.5),
-        ("ai_jensen_gtc_welcome.mp4", 2.0),
+        ("quant_jim_simons_numberphile.mp4", 3.5),
+        ("math_ito_visualization_lemma.mp4", 1.0),
+        ("etf_tmx_35th_anniversary.mp4", 1.0),
+        ("math_ito_visualization_paths.mp4", 3.0),
     ]
 
     frames_cache = []
@@ -708,7 +731,7 @@ def gen_007_endpoints():
 def gen_008_audience():
     """Words appear one by one, centered, each replacing the previous."""
     duration = 3.0
-    ref_pentagon = extract_ref_frame("geo_hegseth_pentagon_open.mp4", 1.5)
+    ref_ito_paths = extract_ref_frame("math_ito_visualization_paths.mp4", 3.0)
 
     words = ["Researchers.", "Students.", "Quants.", "Builders."]
     font = load_font(FONT_BASK, 96)
@@ -717,7 +740,7 @@ def gen_008_audience():
     def frame_func(i, t, n):
         img = Image.new("RGB", (W, H), BG)
         backdrop_a = ease_out(min(t / 0.4, 1.0)) * 0.06
-        img = overlay_ref_clip(img, ref_pentagon, opacity=backdrop_a)
+        img = overlay_ref_clip(img, ref_ito_paths, opacity=backdrop_a)
         draw = ImageDraw.Draw(img)
 
         # Section label
@@ -976,8 +999,8 @@ def gen_012_url():
 
     ref_simons = extract_ref_frame("quant_jim_simons_numberphile.mp4", 2.0)
 
-    font = load_font(FONT_MONO, 34)
-    font_label = load_font(FONT_MONO_LIGHT, 20)
+    font = load_font(FONT_MONO, 40)
+    font_label = load_font(FONT_MONO_LIGHT, 26)
 
     def frame_func(i, t, n):
         img = Image.new("RGB", (W, H), BG)
@@ -1021,42 +1044,54 @@ def gen_012_url():
 
 
 def gen_013_endcard():
-    """Itô MARKETS logo centered. Gold line completes. Fade to black."""
+    """Itô wordmark centered. Gold line. Tagline. Fade to black."""
     duration = 3.5
-    logo = load_logo()
+    cropped_logo = load_cropped_logo()
 
     def frame_func(i, t, n):
         img = Image.new("RGB", (W, H), BG)
         draw = ImageDraw.Draw(img)
 
-        # Fade in
         fade_in = ease_out(min(t / 0.3, 1.0))
 
-        # Logo
-        if logo:
-            l = logo.copy()
-            lw, lh = l.size
-            # Scale logo to reasonable size (max 400px wide)
-            scale = min(400 / lw, 100 / lh)
-            new_lw = int(lw * scale)
-            new_lh = int(lh * scale)
-            l = l.resize((new_lw, new_lh), Image.LANCZOS)
+        # Cropped Itô wordmark — large, visually centered
+        if cropped_logo:
+            cl = cropped_logo.copy()
+            cl_w, cl_h = cl.size
+            target_w = 600
+            logo_scale = target_w / cl_w
+            new_cl_w = int(cl_w * logo_scale)
+            new_cl_h = int(cl_h * logo_scale)
+            cl = cl.resize((new_cl_w, new_cl_h), Image.LANCZOS)
 
-            # Apply fade by modifying alpha
-            l_arr = np.array(l)
-            l_arr[:, :, 3] = (l_arr[:, :, 3].astype(np.float32) * fade_in).astype(np.uint8)
-            l = Image.fromarray(l_arr)
+            cl_arr = np.array(cl)
+            cl_arr[:, :, 3] = (cl_arr[:, :, 3].astype(np.float32) * fade_in).astype(np.uint8)
+            cl = Image.fromarray(cl_arr)
 
-            # Center
-            lx = (W - new_lw) // 2
-            ly = (H - new_lh) // 2 - 20
-            img.paste(l, (lx, ly), l)
+            # True visual center
+            logo_x = (W - new_cl_w) // 2
+            logo_y = (H - new_cl_h) // 2 - 60
+            img.paste(cl, (logo_x, logo_y), cl)
 
-        # Gold line below logo
-        line_y = H // 2 + 50
+        # "MARKETS" below logo
+        font_markets = load_font(FONT_MONO_MEDIUM, 28)
+        markets_text = "M A R K E T S"
+        mbbox = font_markets.getbbox(markets_text)
+        mtw = mbbox[2] - mbbox[0]
+        markets_y = H // 2 + 30
+        markets_c = (
+            int(WHITE[0] * fade_in * 0.7 + BG[0] * (1 - fade_in * 0.7)),
+            int(WHITE[1] * fade_in * 0.7 + BG[1] * (1 - fade_in * 0.7)),
+            int(WHITE[2] * fade_in * 0.7 + BG[2] * (1 - fade_in * 0.7)),
+        )
+        draw.text(((W - mtw) // 2, markets_y), markets_text,
+                   font=font_markets, fill=markets_c)
+
+        # Gold line below
+        line_y = markets_y + 45
         line_alpha = fade_in
-        line_start = int(W * 0.35)
-        line_end = int(W * 0.65)
+        line_start = int(W * 0.30)
+        line_end = int(W * 0.70)
         line_color = (
             int(GOLD[0] * line_alpha),
             int(GOLD[1] * line_alpha),
@@ -1065,20 +1100,35 @@ def gen_013_endcard():
         draw.line([(line_start, line_y), (line_end, line_y)],
                    fill=line_color, width=1)
 
-        # Tagline below
-        font_tag = load_font(FONT_MONO_LIGHT, 20)
+        # Tagline below line — bigger and more visible
+        font_tag = load_font(FONT_MONO_LIGHT, 28)
         if t > 0.25:
             tag_alpha = ease_out(min((t - 0.25) / 0.3, 1.0)) * fade_in
             tag_c = (
-                int(WHITE[0] * tag_alpha * 0.6 + BG[0] * (1 - tag_alpha * 0.6)),
-                int(WHITE[1] * tag_alpha * 0.6 + BG[1] * (1 - tag_alpha * 0.6)),
-                int(WHITE[2] * tag_alpha * 0.6 + BG[2] * (1 - tag_alpha * 0.6)),
+                int(WHITE[0] * tag_alpha * 0.8 + BG[0] * (1 - tag_alpha * 0.8)),
+                int(WHITE[1] * tag_alpha * 0.8 + BG[1] * (1 - tag_alpha * 0.8)),
+                int(WHITE[2] * tag_alpha * 0.8 + BG[2] * (1 - tag_alpha * 0.8)),
             )
             tag = "Research infrastructure for prediction markets."
             tbbox = font_tag.getbbox(tag)
             ttw = tbbox[2] - tbbox[0]
-            draw.text(((W - ttw) // 2, line_y + 25), tag,
+            draw.text(((W - ttw) // 2, line_y + 30), tag,
                        font=font_tag, fill=tag_c)
+
+        # URL
+        font_url = load_font(FONT_MONO_LIGHT, 24)
+        if t > 0.4:
+            url_alpha = ease_out(min((t - 0.4) / 0.3, 1.0)) * fade_in
+            url_c = (
+                int(GOLD[0] * url_alpha * 0.6 + BG[0] * (1 - url_alpha * 0.6)),
+                int(GOLD[1] * url_alpha * 0.6 + BG[1] * (1 - url_alpha * 0.6)),
+                int(GOLD[2] * url_alpha * 0.6 + BG[2] * (1 - url_alpha * 0.6)),
+            )
+            url = "itomarkets.com"
+            ubbox = font_url.getbbox(url)
+            utw = ubbox[2] - ubbox[0]
+            draw.text(((W - utw) // 2, line_y + 70), url,
+                       font=font_url, fill=url_c)
 
         # Fade to black at end
         if t > 0.8:
