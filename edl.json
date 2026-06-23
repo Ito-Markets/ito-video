@@ -8,19 +8,81 @@
  "grade_base": "ito: deep contrast, warm-neutral highlights, cool shadows, subtle grain",
  "pool": [
   {
+   "id": "t_1990",
+   "src": "assets/gen/title_1990.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "open",
+   "family": "title",
+   "rating": 5,
+   "subject": "title",
+   "grade": [],
+   "note": "Opening title: 1990 / Toronto"
+  },
+  {
+   "id": "st_tmx",
+   "src": "assets/gen/still_tmx.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "open",
+   "family": "stock",
+   "rating": 4,
+   "subject": "broll",
+   "grade": ["crush_black"],
+   "note": "TMX ETF 35th anniversary"
+  },
+  {
+   "id": "st_nyse_ticker",
+   "src": "assets/gen/broll_vidsplay_stock_exchange.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "open",
+   "family": "stock",
+   "rating": 5,
+   "subject": "broll",
+   "grade": ["crush_black"],
+   "note": "NYSE trading floor archival (Behind the Ticker Tape)"
+  },
+  {
+   "id": "st_nyse_floor",
+   "src": "assets/gen/broll_archive_vista_nyse_floor.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "history",
+   "family": "stock",
+   "rating": 5,
+   "subject": "broll",
+   "grade": ["crush_black"],
+   "note": "NYSE floor action (Vista Stock Shots)"
+  },
+  {
+   "id": "st_nyse_open",
+   "src": "assets/gen/broll_archive_vista_nyse_open.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "history",
+   "family": "stock",
+   "rating": 4,
+   "subject": "broll",
+   "grade": ["crush_black"],
+   "note": "NYSE opening bell (Vista Stock Shots)"
+  },
+  {
    "id": "h_euler",
    "src": "assets/gen/still_euler.mp4",
    "in": 0.0,
    "out": 4.0,
    "speed": 1.0,
-   "section": "history",
+   "section": "math",
    "family": "math",
    "rating": 5,
    "subject": "euler",
-   "grade": [
-    "mono",
-    "gold"
-   ],
+   "grade": ["mono", "gold"],
    "note": "Euler portrait"
   },
   {
@@ -29,14 +91,11 @@
    "in": 0.0,
    "out": 4.0,
    "speed": 1.0,
-   "section": "history",
+   "section": "math",
    "family": "math",
-   "rating": 4,
+   "rating": 5,
    "subject": "alkhwarizmi",
-   "grade": [
-    "mono",
-    "gold"
-   ],
+   "grade": ["mono", "gold"],
    "note": "Al-Khwarizmi"
   },
   {
@@ -45,14 +104,11 @@
    "in": 0.0,
    "out": 4.0,
    "speed": 1.0,
-   "section": "history",
+   "section": "math",
    "family": "math",
    "rating": 5,
    "subject": "riemann",
-   "grade": [
-    "mono",
-    "cool"
-   ],
+   "grade": ["mono", "cool"],
    "note": "Riemann portrait"
   },
   {
@@ -61,14 +117,11 @@
    "in": 0.0,
    "out": 4.0,
    "speed": 1.0,
-   "section": "history",
+   "section": "math",
    "family": "math",
    "rating": 5,
    "subject": "ito",
-   "grade": [
-    "mono",
-    "cool"
-   ],
+   "grade": ["mono", "cool"],
    "note": "Ito Kiyoshi"
   },
   {
@@ -77,44 +130,12 @@
    "in": 0.0,
    "out": 4.0,
    "speed": 1.0,
-   "section": "history",
+   "section": "math",
    "family": "math",
    "rating": 4,
    "subject": "simons",
-   "grade": [
-    "crush_black"
-   ],
+   "grade": ["crush_black"],
    "note": "Jim Simons"
-  },
-  {
-   "id": "c_atlas",
-   "src": "assets/gen/still_atlas.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "close",
-   "family": "myth",
-   "rating": 5,
-   "subject": "atlas",
-   "grade": [
-    "gold"
-   ],
-   "note": "Atlas Farnese"
-  },
-  {
-   "id": "c_globe",
-   "src": "assets/gen/still_globe.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "close",
-   "family": "myth",
-   "rating": 4,
-   "subject": "globe",
-   "grade": [
-    "gold"
-   ],
-   "note": "Atlas globe"
   },
   {
    "id": "m_sacred",
@@ -126,10 +147,7 @@
    "family": "geometry",
    "rating": 4,
    "subject": "geometry",
-   "grade": [
-    "crush_black",
-    "gold"
-   ],
+   "grade": ["crush_black", "gold"],
    "note": "Sacred geometry"
   },
   {
@@ -142,11 +160,34 @@
    "family": "geometry",
    "rating": 4,
    "subject": "geometry",
-   "grade": [
-    "crush_black",
-    "gold"
-   ],
+   "grade": ["crush_black", "gold"],
    "note": "Basket convergence"
+  },
+  {
+   "id": "m_stochastic",
+   "src": "assets/gen/stochastic_paths.mp4",
+   "in": 0.0,
+   "out": 6.0,
+   "speed": 1.0,
+   "section": "math",
+   "family": "math",
+   "rating": 5,
+   "subject": "stochastic",
+   "grade": ["crush_black"],
+   "note": "Ito stochastic calculus visualization"
+  },
+  {
+   "id": "m_names",
+   "src": "assets/gen/names_montage.mp4",
+   "in": 0.0,
+   "out": 10.0,
+   "speed": 1.0,
+   "section": "math",
+   "family": "title",
+   "rating": 5,
+   "subject": "names",
+   "grade": [],
+   "note": "Math names montage"
   },
   {
    "id": "m_web",
@@ -158,370 +199,125 @@
    "family": "network",
    "rating": 4,
    "subject": "network",
-   "grade": [
-    "cool"
-   ],
+   "grade": ["cool"],
    "note": "Market network"
   },
   {
-   "id": "p_ito",
-   "src": "/Users/affoon/Downloads/itovault/ito_vid.mp4",
+   "id": "m_ticker",
+   "src": "assets/gen/ticker_overlay.mp4",
+   "in": 0.0,
+   "out": 6.0,
+   "speed": 1.0,
+   "section": "product",
+   "family": "data",
+   "rating": 4,
+   "subject": "ticker",
+   "grade": [],
+   "note": "Scrolling ticker tape"
+  },
+  {
+   "id": "p_fragment",
+   "src": "assets/gen/fragment_venues.mp4",
+   "in": 0.0,
+   "out": 8.0,
+   "speed": 1.0,
+   "section": "problem",
+   "family": "market",
+   "rating": 5,
+   "subject": "fragment",
+   "grade": [],
+   "note": "Fragmented prediction market venues"
+  },
+  {
+   "id": "c_atlas",
+   "src": "assets/gen/still_atlas.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "close",
+   "family": "myth",
+   "rating": 5,
+   "subject": "atlas",
+   "grade": ["gold"],
+   "note": "Atlas Farnese"
+  },
+  {
+   "id": "c_globe",
+   "src": "assets/gen/still_globe.mp4",
+   "in": 0.0,
+   "out": 5.0,
+   "speed": 1.0,
+   "section": "close",
+   "family": "myth",
+   "rating": 4,
+   "subject": "globe",
+   "grade": ["gold"],
+   "note": "Atlas globe"
+  },
+  {
+   "id": "c_endcard",
+   "src": "assets/gen/endcard.mp4",
+   "in": 0.0,
+   "out": 8.0,
+   "speed": 1.0,
+   "section": "close",
+   "family": "title",
+   "rating": 5,
+   "subject": "endcard",
+   "grade": [],
+   "note": "End card: ItoMarkets branding"
+  },
+  {
+   "id": "broll_problem_traders",
+   "src": "assets/gen/broll_problem_traders.mp4",
+   "in": 0.0,
+   "out": 8.0,
+   "speed": 1.0,
+   "section": "problem",
+   "family": "stock",
+   "rating": 4,
+   "subject": "broll",
+   "grade": ["crush_black"],
+   "note": "Trading floor chaos (fragmentation visual)"
+  },
+  {
+   "id": "broll_solution_floor",
+   "src": "assets/gen/broll_solution_floor.mp4",
    "in": 0.0,
    "out": 8.0,
    "speed": 1.0,
    "section": "solution",
-   "family": "product",
+   "family": "stock",
    "rating": 4,
-   "subject": "product",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "ito brand video"
+   "subject": "broll",
+   "grade": ["crush_black"],
+   "note": "Exchange floor - solution infrastructure"
   },
   {
-   "id": "f_founder1",
-   "src": "/Users/affoon/Downloads/rawtalkingclips/2026-05-26 01-31-25.mov",
+   "id": "broll_solution_trading",
+   "src": "assets/gen/broll_solution_trading.mp4",
+   "in": 0.0,
+   "out": 8.0,
+   "speed": 1.0,
+   "section": "solution",
+   "family": "stock",
+   "rating": 4,
+   "subject": "broll",
+   "grade": ["crush_black"],
+   "note": "Active trading - solution in action"
+  },
+  {
+   "id": "broll_product_exchange",
+   "src": "assets/gen/broll_product_exchange.mp4",
    "in": 0.0,
    "out": 6.0,
    "speed": 1.0,
-   "section": "solution",
-   "family": "founder",
-   "rating": 3,
-   "subject": "founder",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "talking clip founder1"
-  },
-  {
-   "id": "f_founder2",
-   "src": "/Users/affoon/Downloads/rawtalkingclips/IMG_0212.MOV",
-   "in": 0.0,
-   "out": 6.0,
-   "speed": 1.0,
-   "section": "solution",
-   "family": "founder",
-   "rating": 3,
-   "subject": "founder",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "talking clip founder2"
-  },
-  {
-   "id": "f_founder3",
-   "src": "/Users/affoon/Downloads/rawtalkingclips/IMG_4763.MOV",
-   "in": 0.0,
-   "out": 6.0,
-   "speed": 1.0,
-   "section": "solution",
-   "family": "founder",
-   "rating": 3,
-   "subject": "founder",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "talking clip founder3"
-  },
-  {
-   "id": "s_screen1",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 07-55-27_1.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "problem",
-   "family": "screen",
-   "rating": 3,
-   "subject": "screen",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "screen recording screen1"
-  },
-  {
-   "id": "s_screen2",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-04-44_1.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "problem",
-   "family": "screen",
-   "rating": 3,
-   "subject": "screen",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "screen recording screen2"
-  },
-  {
-   "id": "s_screen3",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-53-06_1.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "problem",
-   "family": "screen",
-   "rating": 3,
-   "subject": "screen",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "screen recording screen3"
-  },
-  {
-   "id": "s_screen4",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 09-29-14_1.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "product",
-   "family": "screen",
-   "rating": 3,
-   "subject": "screen",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "screen recording screen4"
-  },
-  {
-   "id": "s_screen5",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 09-38-13_1.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "product",
-   "family": "screen",
-   "rating": 3,
-   "subject": "screen",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "screen recording screen5"
-  },
-  {
-   "id": "st_nyse_entrance",
-   "src": "assets/raw/dareful_nyse_entrance.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "open",
-   "family": "stock",
-   "rating": 4,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "free stock nyse_entrance"
-  },
-  {
-   "id": "st_stock_exchange",
-   "src": "assets/raw/vidsplay_stock_exchange.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "history",
-   "family": "stock",
-   "rating": 4,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "free stock stock_exchange"
-  },
-  {
-   "id": "st_business_graph",
-   "src": "assets/raw/vidsplay_business_graph.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
    "section": "product",
    "family": "stock",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "free stock business_graph"
-  },
-  {
-   "id": "st_office_building",
-   "src": "assets/raw/vidsplay_office_building.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "close",
-   "family": "stock",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "free stock office_building"
-  },
-  {
-   "id": "st_vista_nyse_open",
-   "src": "assets/raw/archive_vista_nyse_open.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "open",
-   "family": "stock",
    "rating": 4,
    "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "free stock vista_nyse_open"
-  },
-  {
-   "id": "st_vista_nyse_floor",
-   "src": "assets/raw/archive_vista_nyse_floor.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "history",
-   "family": "stock",
-   "rating": 4,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "free stock vista_nyse_floor"
-  },
-  {
-   "id": "st_behind_ticker",
-   "src": "assets/raw/archive_behind_ticker_tape_open.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "history",
-   "family": "stock",
-   "rating": 4,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "free stock behind_ticker"
-  },
-  {
-   "id": "r_ito_intro",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ito_markets_intro.mp4",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "open",
-   "family": "clip",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "raw footage ito_intro"
-  },
-  {
-   "id": "r_pov1",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-75_singular_display.mov",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "open",
-   "family": "clip",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "raw footage pov1"
-  },
-  {
-   "id": "r_pov2",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-235_singular_display.mov",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "open",
-   "family": "clip",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "raw footage pov2"
-  },
-  {
-   "id": "r_drone1",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/dji_export_20260604_094245_1780580565393_compose_0.mov",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "close",
-   "family": "clip",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "raw footage drone1"
-  },
-  {
-   "id": "r_drone2",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/dji_export_20260604_101202_1780582322354_compose_0.mov",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "close",
-   "family": "clip",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "raw footage drone2"
-  },
-  {
-   "id": "r_city1",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0225.MOV",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "open",
-   "family": "clip",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "raw footage city1"
-  },
-  {
-   "id": "r_city2",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0590.MOV",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "open",
-   "family": "clip",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "raw footage city2"
-  },
-  {
-   "id": "r_city3",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3842.MOV",
-   "in": 0.0,
-   "out": 5.0,
-   "speed": 1.0,
-   "section": "close",
-   "family": "clip",
-   "rating": 3,
-   "subject": "broll",
-   "grade": [
-    "crush_black"
-   ],
-   "note": "raw footage city3"
+   "grade": ["crush_black"],
+   "note": "Exchange mechanisms - product detail"
   }
  ]
 }
