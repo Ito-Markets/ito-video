@@ -58,6 +58,21 @@ python3 build_ito.py
 python3 export_capcut.py
 ```
 
+## TasteForge (repeatable taste-driven workflow)
+
+The `tasteforge/` package canonicalizes the recovered TasteForge/FAL-video
+flow into maintained, offline, deterministic tooling: taste interviews,
+style-pack validation, offline distillation, applying a pack's cadence to
+local media, and EDL/FCPXML export. Provider operations fail closed.
+
+```bash
+python3 -m tasteforge inspect tasteforge/fixtures/flashethereal
+python3 -m unittest discover -s tests
+```
+
+See `tasteforge/README.md` (operator guide) and `PROVENANCE.md`
+(recovered-source lineage and exclusions).
+
 ## Notes
 
 - `assets/raw/` is gitignored; copy or symlink source clips here.
