@@ -170,7 +170,9 @@ def validate_genre_specs(specs: list[dict[str, Any]]) -> None:
             raise ContractError(f"genre {spec.get('number')} has an empty signature axis, including avoid")
 
 
-def validate_effect_recipe(recipe: dict[str, Any]) -> None:
+def validate_effect_recipe(
+    recipe: dict[str, Any], *, reference_durations: dict[str, float] | None = None
+) -> None:
     """Require a seeded aperiodic schedule and anchors on subject-aware effects."""
     if (recipe.get("dry_run") is not True
             or type(recipe.get("provider_calls")) is not int
@@ -206,6 +208,11 @@ def validate_effect_recipe(recipe: dict[str, Any]) -> None:
         _validate_media_time(
             evidence.get("time"), evidence.get("source_duration"), label="effect evidence time"
         )
+        if reference_durations is not None:
+            digest = evidence.get("reference_sha256")
+            expected_duration = reference_durations.get(digest) if isinstance(digest, str) else None
+            if expected_duration is None or evidence.get("source_duration") != expected_duration:
+                raise ContractError("effect evidence source duration is not bound to its receipt reference")
     times = [float(event["time"]) for event in events]
     if times != sorted(times) or len(times) != len(set(times)):
         raise ContractError("effect event times must be unique and increasing")
@@ -237,6 +244,11 @@ def validate_effect_recipe(recipe: dict[str, Any]) -> None:
                 anchor.get("evidence_time"), anchor.get("source_duration"),
                 label="anchor evidence time",
             )
+            if reference_durations is not None:
+                digest = anchor.get("source_ref_sha256")
+                expected_duration = reference_durations.get(digest) if isinstance(digest, str) else None
+                if expected_duration is None or anchor.get("source_duration") != expected_duration:
+                    raise ContractError("anchor evidence source duration is not bound to its receipt reference")
     for event in events:
         placement = event.get("placement")
         if not isinstance(placement, dict) or not {"safe_area", "max_coverage", "occlusion_policy"}.issubset(placement):
@@ -278,12 +290,14 @@ def validate_manifests(manifests_dir: str | Path) -> None:
         if payload.get("modality") != modality or not payload.get("requests"):
             raise ContractError(f"invalid or empty {modality} manifest")
         if (payload.get("dry_run") is not True or payload.get("submit") is not False
+                or type(payload.get("provider_calls")) is not int
                 or payload.get("provider_calls") != 0
                 or payload.get("provider_execution") is not False):
             raise ContractError(f"{modality} manifest crosses the dry-run boundary")
         for request in payload["requests"]:
             if (request.get("dry_run") is not True
                     or request.get("submit") is not False
+                    or type(request.get("provider_calls")) is not int
                     or request.get("provider_calls") != 0
                     or request.get("provider_execution") is not False
                     or request.get("provider_call_mode") != "disabled"):
@@ -441,11 +455,6 @@ def validate_bundle(out_dir: str | Path) -> None:
         raise ContractError("missing provenance")
     validate_provenance(json.loads(provenance_path.read_text(encoding="utf-8")))
 
-    recipe_path = out_dir / "resolve" / "effect_recipe.json"
-    if not recipe_path.is_file():
-        raise ContractError("missing Resolve effect recipe")
-    validate_effect_recipe(json.loads(recipe_path.read_text(encoding="utf-8")))
-
     receipt_path = out_dir / "receipt.json"
     if not receipt_path.is_file():
         raise ContractError("missing receipt")
@@ -456,3 +465,23 @@ def validate_bundle(out_dir: str | Path) -> None:
             or receipt.get("provider_calls") != 0):
         raise ContractError("receipt crosses the dry-run boundary")
     validate_artifact_receipt(out_dir, receipt)
+
+    reference_durations: dict[str, float] = {}
+    for reference in receipt.get("references", []):
+        digest = reference.get("sha256")
+        duration = reference.get("source_duration")
+        if not isinstance(digest, str) or not _is_finite_real(duration):
+            raise ContractError("receipt reference cannot bind recipe evidence")
+        duration = float(duration)
+        previous = reference_durations.get(digest)
+        if previous is not None and previous != duration:
+            raise ContractError("receipt reference digest has conflicting source durations")
+        reference_durations[digest] = duration
+
+    recipe_path = out_dir / "resolve" / "effect_recipe.json"
+    if not recipe_path.is_file():
+        raise ContractError("missing Resolve effect recipe")
+    validate_effect_recipe(
+        json.loads(recipe_path.read_text(encoding="utf-8")),
+        reference_durations=reference_durations,
+    )

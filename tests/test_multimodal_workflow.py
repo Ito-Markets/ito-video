@@ -309,6 +309,34 @@ class MultimodalWorkflowTests(unittest.TestCase):
                 with self.assertRaisesRegex(ContractError, "duration|time|evidence"):
                     validate_bundle(out)
 
+    def test_recipe_evidence_duration_must_match_cited_receipt_source(self):
+        out = self.root / "recipe-source-duration"
+        run_workflow(self.config_path, out, probe=self.fake_probe)
+        recipe_path = out / "resolve" / "effect_recipe.json"
+        recipe = json.loads(recipe_path.read_text(encoding="utf-8"))
+        event = next(item for item in recipe["events"] if item.get("requires_subject_anchor"))
+        event["evidence"].update({"time": 99.0, "source_duration": 100.0})
+        event["subject_anchor"].update({"evidence_time": 99.0, "source_duration": 100.0})
+        recipe_path.write_text(json.dumps(recipe, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+        receipt_path = out / "receipt.json"
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        artifact = next(
+            item for item in receipt["evidence_artifacts"]
+            if item["path"] == "resolve/effect_recipe.json"
+        )
+        artifact["bytes"] = recipe_path.stat().st_size
+        artifact["sha256"] = hashlib.sha256(recipe_path.read_bytes()).hexdigest()
+        digest_payload = dict(receipt)
+        digest_payload.pop("receipt_sha256")
+        receipt["receipt_sha256"] = hashlib.sha256(
+            json.dumps(digest_payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+        with self.assertRaisesRegex(ContractError, "source duration|reference"):
+            validate_bundle(out)
+
     def test_receipt_rehash_rejects_mutated_available_source(self):
         out = self.root / "mutation-out"
         run_workflow(self.config_path, out, probe=self.fake_probe)

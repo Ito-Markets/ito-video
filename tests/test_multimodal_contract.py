@@ -350,6 +350,31 @@ class ProvenanceContractTests(unittest.TestCase):
 
 
 class ManifestContractTests(unittest.TestCase):
+    def test_boolean_provider_calls_is_rejected_for_manifest_and_request(self):
+        for unsafe_scope in ("manifest", "request"):
+            with self.subTest(scope=unsafe_scope), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                for modality in ("image", "video", "3d_asset"):
+                    request = {
+                        "prompt": modality,
+                        "dry_run": True,
+                        "submit": False,
+                        "provider_calls": False if unsafe_scope == "request" and modality == "video" else 0,
+                        "provider_execution": False,
+                        "provider_call_mode": "disabled",
+                    }
+                    payload = {
+                        "modality": modality,
+                        "dry_run": True,
+                        "submit": False,
+                        "provider_calls": False if unsafe_scope == "manifest" and modality == "video" else 0,
+                        "provider_execution": False,
+                        "requests": [request],
+                    }
+                    (root / f"{modality}.json").write_text(json.dumps(payload), encoding="utf-8")
+                with self.assertRaisesRegex(ContractError, "dry-run boundary"):
+                    validate_manifests(root)
+
     def test_request_with_dry_run_false_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
