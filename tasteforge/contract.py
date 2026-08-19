@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import re
+import stat
 from pathlib import Path
 from typing import Any
 
@@ -16,16 +19,50 @@ class ContractError(ValueError):
 
 
 def _sha256(path: Path) -> str:
+    if not hasattr(os, "O_NOFOLLOW"):
+        raise ContractError("secure receipt validation requires O_NOFOLLOW")
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
     digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+    try:
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode):
+            raise ContractError(f"receipt source is not a regular file: {path}")
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
             digest.update(chunk)
+    finally:
+        os.close(descriptor)
     return digest.hexdigest()
 
 
 def _semantic_signature(spec: dict[str, Any]) -> str:
     signature = spec.get("signature", {})
     return json.dumps(signature, sort_keys=True, separators=(",", ":"))
+
+
+def _validate_output_tree(root: Path) -> None:
+    """Reject symlinks and special files before parsing bundle content."""
+    try:
+        metadata = root.lstat()
+    except FileNotFoundError:
+        raise ContractError("output bundle is missing") from None
+    if stat.S_ISLNK(metadata.st_mode):
+        raise ContractError("output bundle root must not be a symlink")
+    if not stat.S_ISDIR(metadata.st_mode):
+        raise ContractError("output bundle root must be a directory")
+    pending = [root]
+    while pending:
+        directory = pending.pop()
+        with os.scandir(directory) as entries:
+            for entry in entries:
+                if entry.is_symlink():
+                    raise ContractError(f"output bundle contains a symlink: {entry.path}")
+                if entry.is_dir(follow_symlinks=False):
+                    pending.append(Path(entry.path))
+                elif not entry.is_file(follow_symlinks=False):
+                    raise ContractError(f"output bundle contains a special file: {entry.path}")
 
 
 def validate_genre_specs(specs: list[dict[str, Any]]) -> None:
@@ -47,8 +84,8 @@ def validate_genre_specs(specs: list[dict[str, Any]]) -> None:
             raise ContractError(f"genre {spec.get('number')} has an incomplete signature")
         if not all(isinstance(signature[axis], list) for axis in _SIGNATURE_AXES):
             raise ContractError(f"genre {spec.get('number')} signature axes must be lists")
-        if not all(signature[axis] for axis in _SIGNATURE_AXES - {"avoid"}):
-            raise ContractError(f"genre {spec.get('number')} uses generic empty style axes")
+        if not all(signature[axis] for axis in _SIGNATURE_AXES):
+            raise ContractError(f"genre {spec.get('number')} has an empty signature axis, including avoid")
 
 
 def validate_effect_recipe(recipe: dict[str, Any]) -> None:
@@ -60,10 +97,14 @@ def validate_effect_recipe(recipe: dict[str, Any]) -> None:
     events = recipe.get("events")
     if not isinstance(events, list) or len(events) < 3:
         raise ContractError("effect recipe needs at least three scheduled events")
+    timeline = recipe.get("timeline_duration")
+    if (not isinstance(timeline, (int, float)) or isinstance(timeline, bool)
+            or not 0 < float(timeline)):
+        raise ContractError("effect recipe must declare a positive timeline duration")
     times = [float(event["time"]) for event in events]
     if times != sorted(times) or len(times) != len(set(times)):
         raise ContractError("effect event times must be unique and increasing")
-    intervals = [round(b - a, 6) for a, b in zip(times, times[1:])]
+    intervals = [round(b - a, 6) for a, b in zip(times, times[1:])]  # noqa: RUF007
     if len(set(intervals)) <= 1:
         raise ContractError("stochastic schedule is periodic; intervals must vary")
     for period in range(1, len(intervals) // 2 + 1):
@@ -72,6 +113,14 @@ def validate_effect_recipe(recipe: dict[str, Any]) -> None:
     if recipe.get("periodic") is not False:
         raise ContractError("effect recipe must explicitly declare periodic=false")
     for event in events:
+        start = event.get("time")
+        duration = event.get("duration")
+        if (not isinstance(start, (int, float)) or isinstance(start, bool)
+                or not isinstance(duration, (int, float)) or isinstance(duration, bool)
+                or float(start) < 0 or float(duration) <= 0):
+            raise ContractError("effect event start and duration must be positive timeline values")
+        if float(start) + float(duration) > float(timeline) + 1e-9:
+            raise ContractError("effect event end exceeds the declared timeline")
         cv_effect = str(event.get("effect", "")).startswith("cv_")
         if cv_effect and event.get("requires_subject_anchor") is not True:
             raise ContractError(f"CV effect {event.get('effect')} must require a subject anchor")
@@ -82,6 +131,8 @@ def validate_effect_recipe(recipe: dict[str, Any]) -> None:
                 raise ContractError(f"CV effect {event.get('effect')} lacks a valid subject anchor")
             if anchor.get("mode") not in {"object_track", "point_track", "segmentation_track"}:
                 raise ContractError(f"CV effect {event.get('effect')} has an invalid subject anchor")
+            if anchor.get("lost_policy") != "disable_effect_until_track_recovers":
+                raise ContractError(f"CV effect {event.get('effect')} must fail closed on anchor loss")
     for event in events:
         placement = event.get("placement")
         if not isinstance(placement, dict) or not {"safe_area", "max_coverage", "occlusion_policy"}.issubset(placement):
@@ -119,12 +170,15 @@ def validate_manifests(manifests_dir: str | Path) -> None:
         payload = json.loads((manifests_dir / f"{modality}.json").read_text(encoding="utf-8"))
         if payload.get("modality") != modality or not payload.get("requests"):
             raise ContractError(f"invalid or empty {modality} manifest")
-        if (payload.get("dry_run") is not True or payload.get("provider_calls") != 0
+        if (payload.get("dry_run") is not True or payload.get("submit") is not False
+                or payload.get("provider_calls") != 0
                 or payload.get("provider_execution") is not False):
             raise ContractError(f"{modality} manifest crosses the dry-run boundary")
         for request in payload["requests"]:
-            if (request.get("provider_execution") is not False
+            if (request.get("dry_run") is not True
                     or request.get("submit") is not False
+                    or request.get("provider_calls") != 0
+                    or request.get("provider_execution") is not False
                     or request.get("provider_call_mode") != "disabled"):
                 raise ContractError(f"{modality} request crosses the dry-run boundary")
 
@@ -137,12 +191,44 @@ def validate_artifact_receipt(out_dir: str | Path, receipt: dict[str, Any]) -> N
         raise ContractError("receipt evidence_artifacts must be a list")
     if not all(isinstance(entry, dict) for entry in entries):
         raise ContractError("receipt evidence_artifacts entries must be objects")
-    known_sources = {
-        (source.get("path"), source.get("sha256"))
-        for key in ("references", "evidence_files")
-        for source in receipt.get(key, [])
-        if isinstance(source, dict)
-    }
+    known_sources: set[tuple[str, str]] = set()
+    for key in ("references", "evidence_files"):
+        sources = receipt.get(key, [])
+        if not isinstance(sources, list):
+            raise ContractError(f"receipt {key} must be a list")
+        for source in sources:
+            if not isinstance(source, dict):
+                raise ContractError(f"receipt {key} contains an invalid source")
+            source_path = source.get("path")
+            expected_digest = source.get("sha256")
+            if (not isinstance(source_path, str) or not source_path
+                    or not isinstance(expected_digest, str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)):
+                raise ContractError("receipt has an invalid source identity")
+            known_sources.add((source_path, expected_digest))
+    source_policy = receipt.get("source_availability_policy")
+    if known_sources and source_policy not in {"allow_unavailable", "require_available"}:
+        raise ContractError("receipt must declare an explicit source availability policy")
+    for source_path, expected_digest in sorted(known_sources):
+        path = Path(source_path)
+        try:
+            metadata = path.lstat()
+        except FileNotFoundError:
+            if source_policy == "require_available":
+                raise ContractError(f"receipt source is unavailable: {source_path}") from None
+            continue
+        if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
+            raise ContractError(f"receipt source is not a safe regular file: {source_path}")
+        try:
+            actual_digest = _sha256(path)
+        except FileNotFoundError:
+            if source_policy == "require_available":
+                raise ContractError(f"receipt source is unavailable: {source_path}") from None
+            continue
+        except OSError:
+            raise ContractError(f"receipt source cannot be securely read: {source_path}") from None
+        if actual_digest != expected_digest:
+            raise ContractError(f"receipt source SHA-256 changed after generation: {source_path}")
 
     emitted = {
         path.relative_to(out_dir).as_posix()
@@ -218,6 +304,7 @@ def validate_artifact_receipt(out_dir: str | Path, receipt: dict[str, Any]) -> N
 def validate_bundle(out_dir: str | Path) -> None:
     """Validate required multimodal files and cross-artifact invariants."""
     out_dir = Path(out_dir)
+    _validate_output_tree(out_dir)
     specs = [json.loads(path.read_text(encoding="utf-8"))
              for path in sorted((out_dir / "genres").glob("*.json"))]
     validate_genre_specs(specs)

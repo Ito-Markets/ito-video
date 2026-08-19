@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import io
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr
 from pathlib import Path
 from unittest import mock
 
@@ -42,11 +45,32 @@ def run_cli(*args, expect=0):
         capture_output=True,
         text=True,
         cwd=REPO_ROOT,
+        check=False,
     )
     return proc
 
 
 class CliTests(unittest.TestCase):
+    def test_corrupt_media_process_failure_is_bounded_and_redacted(self):
+        failure = subprocess.CalledProcessError(
+            1,
+            ["ffprobe", "https://provider.invalid/?token=secret-value"],
+            stderr="provider response secret-value",
+        )
+        stderr = io.StringIO()
+        with mock.patch(
+            "tasteforge.cli.workflow_mod.run_workflow", side_effect=failure
+        ), redirect_stderr(stderr):
+            status = cli.main([
+                "multimodal", "--config", "corrupt.json", "--out-dir", "out"
+            ])
+        message = stderr.getvalue()
+        self.assertEqual(status, cli.EXIT_INVALID)
+        self.assertEqual(message, "ERROR local media processing failed\n")
+        self.assertNotIn("Traceback", message)
+        self.assertNotIn("secret-value", message)
+        self.assertNotIn("provider.invalid", message)
+
     def test_multimodal_command_routes_file_contract_and_validates_bundle(self):
         with tempfile.TemporaryDirectory() as td:
             config = Path(td) / "workflow.json"
@@ -139,6 +163,84 @@ class CliTests(unittest.TestCase):
         p = Path(td) / "answers.json"
         p.write_text(json.dumps(obj))
         return str(p)
+
+
+@unittest.skipUnless(shutil.which("ffmpeg") and shutil.which("ffprobe"), "ffmpeg tools unavailable")
+class RealMediaCliIntegrationTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.media = self.root / "reference.mp4"
+        ffmpeg = shutil.which("ffmpeg")
+        assert ffmpeg is not None
+        generated = subprocess.run(
+            [
+                ffmpeg, "-v", "error", "-f", "lavfi", "-i",
+                "color=c=blue:s=64x64:r=12:d=1", "-c:v", "mpeg4", "-y", str(self.media),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if generated.returncode != 0:
+            self.skipTest("local ffmpeg cannot generate the integration fixture")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _config(self, reference: Path) -> Path:
+        genres = []
+        values = [
+            (1, "flash-ethereal", "Flash Ethereal", "glass", "flash", "center", "mud"),
+            (2, "3d-cyber-glitch", "3D Cyber Glitch", "chrome", "orbit", "full", "corner"),
+            (3, "fluid-sketch", "Fluid Sketch", "ink", "bleed", "space", "grid"),
+        ]
+        for number, slug, label, material, motion, composition, avoid in values:
+            genres.append({
+                "number": number,
+                "slug": slug,
+                "label": label,
+                "references": [str(reference)],
+                "signature": {
+                    "materials": [material],
+                    "motion": [motion],
+                    "composition": [composition],
+                    "avoid": [avoid],
+                },
+            })
+        config = self.root / "workflow.json"
+        config.write_text(json.dumps({
+            "schema_version": 1,
+            "run_id": "real-tools",
+            "seed": 15,
+            "dry_run": True,
+            "resolve_duration": 6.0,
+            "genres": genres,
+        }), encoding="utf-8")
+        return config
+
+    def test_real_ffmpeg_ffprobe_cli_emits_and_validates_bundle(self):
+        out = self.root / "out"
+        proc = run_cli(
+            "multimodal", "--config", str(self._config(self.media)), "--out-dir", str(out)
+        )
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        receipt = json.loads(proc.stdout)
+        self.assertEqual(receipt["provider_calls"], 0)
+        self.assertFalse(receipt["provider_execution"])
+        self.assertTrue((out / "receipt.json").is_file())
+
+    def test_real_corrupt_media_cli_failure_is_bounded_and_redacted(self):
+        corrupt = self.root / "corrupt.mov"
+        corrupt.write_bytes(b"not-media-secret-marker")
+        proc = run_cli(
+            "multimodal", "--config", str(self._config(corrupt)),
+            "--out-dir", str(self.root / "corrupt-out"),
+        )
+        self.assertEqual(proc.returncode, cli.EXIT_INVALID)
+        self.assertEqual(proc.stderr, "ERROR local media processing failed\n")
+        self.assertNotIn("Traceback", proc.stderr)
+        self.assertNotIn("not-media-secret-marker", proc.stderr)
 
 
 if __name__ == "__main__":

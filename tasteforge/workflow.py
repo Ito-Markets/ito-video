@@ -9,13 +9,17 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import random
 import re
+import secrets
 import shutil
+import stat
 import statistics
 import subprocess
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 Probe = Callable[[Path], dict[str, Any]]
 _MODALITIES = ("image", "video", "3d_asset")
@@ -33,9 +37,140 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _write_json(path: Path, payload: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+class _SafeOutput:
+    """Descriptor-bound output tree with no-follow traversal and atomic writes."""
+
+    def __init__(self, root: Path) -> None:
+        self._root_fd = -1
+        if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY"):
+            raise RuntimeError("secure output requires O_NOFOLLOW and O_DIRECTORY")
+        if root.exists() or root.is_symlink():
+            metadata = root.lstat()
+            if stat.S_ISLNK(metadata.st_mode):
+                raise ValueError("output root must not be a symlink")
+            if not stat.S_ISDIR(metadata.st_mode):
+                raise ValueError("output root must be a directory")
+        else:
+            if not root.parent.is_dir():
+                raise ValueError("output parent directory must already exist")
+            root.mkdir(mode=0o700)
+        self.root = root
+        self._root_fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        self._written: list[str] = []
+
+    def close(self) -> None:
+        if self._root_fd >= 0:
+            os.close(self._root_fd)
+            self._root_fd = -1
+
+    def __del__(self) -> None:
+        self.close()
+
+    def _open_dir(self, parts: tuple[str, ...], *, create: bool) -> int:
+        current = os.dup(self._root_fd)
+        try:
+            for part in parts:
+                if not part or part in {".", ".."} or "/" in part:
+                    raise ValueError("output path contains an invalid component")
+                try:
+                    metadata = os.stat(part, dir_fd=current, follow_symlinks=False)
+                except FileNotFoundError:
+                    if not create:
+                        raise ValueError(f"missing output directory: {part}") from None
+                    os.mkdir(part, mode=0o700, dir_fd=current)
+                    metadata = os.stat(part, dir_fd=current, follow_symlinks=False)
+                if stat.S_ISLNK(metadata.st_mode):
+                    raise ValueError(f"output directory must not be a symlink: {part}")
+                if not stat.S_ISDIR(metadata.st_mode):
+                    raise ValueError(f"output intermediate must be a directory: {part}")
+                child = os.open(
+                    part,
+                    os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                    dir_fd=current,
+                )
+                os.close(current)
+                current = child
+            return current
+        except Exception:
+            os.close(current)
+            raise
+
+    def prepare(self, directories: tuple[str, ...]) -> None:
+        """Validate every known intermediate before the first artifact write."""
+        opened: list[int] = []
+        try:
+            for directory in directories:
+                opened.append(self._open_dir((directory,), create=True))
+        finally:
+            for descriptor in opened:
+                os.close(descriptor)
+
+    def write_json(self, relative: str, payload: Any) -> None:
+        path = Path(relative)
+        if path.is_absolute() or not path.name or any(part in {".", ".."} for part in path.parts):
+            raise ValueError("artifact path must stay beneath output root")
+        parent_fd = self._open_dir(tuple(path.parts[:-1]), create=False)
+        temporary = f".{path.name}.tmp-{secrets.token_hex(8)}"
+        descriptor = -1
+        try:
+            try:
+                existing = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
+            except FileNotFoundError:
+                existing = None
+            if existing is not None and not stat.S_ISREG(existing.st_mode):
+                raise ValueError(f"output artifact must be a regular file: {relative}")
+            data = json.dumps(payload, indent=2, sort_keys=True).encode("utf-8") + b"\n"
+            descriptor = os.open(
+                temporary,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                0o600,
+                dir_fd=parent_fd,
+            )
+            view = memoryview(data)
+            while view:
+                written = os.write(descriptor, view)
+                view = view[written:]
+            os.fsync(descriptor)
+            os.close(descriptor)
+            descriptor = -1
+            os.replace(temporary, path.name, src_dir_fd=parent_fd, dst_dir_fd=parent_fd)
+            os.fsync(parent_fd)
+            if relative not in self._written:
+                self._written.append(relative)
+        finally:
+            if descriptor >= 0:
+                os.close(descriptor)
+            try:
+                os.unlink(temporary, dir_fd=parent_fd)
+            except FileNotFoundError:
+                pass
+            os.close(parent_fd)
+
+    def artifact_paths(self) -> list[str]:
+        return sorted(self._written)
+
+    def artifact_metadata(self, relative: str) -> tuple[int, str]:
+        path = Path(relative)
+        parent_fd = self._open_dir(tuple(path.parts[:-1]), create=False)
+        descriptor = -1
+        try:
+            descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent_fd)
+            metadata = os.fstat(descriptor)
+            if not stat.S_ISREG(metadata.st_mode):
+                raise ValueError(f"output artifact must be a regular file: {relative}")
+            digest = hashlib.sha256()
+            total = 0
+            while True:
+                chunk = os.read(descriptor, 1024 * 1024)
+                if not chunk:
+                    break
+                total += len(chunk)
+                digest.update(chunk)
+            return total, digest.hexdigest()
+        finally:
+            if descriptor >= 0:
+                os.close(descriptor)
+            os.close(parent_fd)
 
 
 def parse_feature_output(output: str, *, scene_threshold: float = 0.30) -> dict[str, Any]:
@@ -179,19 +314,32 @@ def _build_effect_recipe(
         "3d-cyber-glitch": "cv_wireframe_lock",
         "fluid-sketch": "fluid_contour_bleed",
     }
-    events: list[dict[str, Any]] = []
+    event_times: list[float] = []
     clock = round(rng.uniform(0.35, 0.75), 6)
-    index = 0
-    while clock < duration - 0.25 and len(events) < 18:
+    while clock <= duration - 0.08 and len(event_times) < 18:
+        event_times.append(clock)
+        clock = round(clock + rng.uniform(0.61, 2.17), 6)
+
+    # Short timelines use deterministic, aperiodic fallback positions rather
+    # than forcing later random draws beyond the declared duration.
+    if len(event_times) < 4:
+        event_times.extend(round(duration * fraction, 6) for fraction in (0.10, 0.28, 0.53, 0.82))
+        event_times = sorted({time for time in event_times if 0 <= time <= duration - 0.08})[:18]
+    if len(event_times) < 4:
+        raise ValueError("timeline is too short for a fail-closed aperiodic effect schedule")
+
+    events: list[dict[str, Any]] = []
+    for index, clock in enumerate(event_times):
         spec = specs[index % len(specs)]
         ref = by_genre[spec["number"]][index % len(by_genre[spec["number"]])]
         sample_times = ref["probe"].get("sample_times", [])
         evidence_time = float(sample_times[index % len(sample_times)]) if sample_times else 0.0
         requires_anchor = spec["slug"] == "3d-cyber-glitch"
+        event_duration = round(min(rng.uniform(0.08, 0.42), duration - clock), 6)
         event: dict[str, Any] = {
             "event_id": f"fx-{index:03d}",
             "time": clock,
-            "duration": round(rng.uniform(0.08, 0.42), 6),
+            "duration": event_duration,
             "genre_number": spec["number"],
             "effect": effect_names.get(spec["slug"], "reference_accent"),
             "requires_subject_anchor": requires_anchor,
@@ -213,45 +361,6 @@ def _build_effect_recipe(
                 "target": "primary_subject",
                 "source_ref_sha256": ref["sha256"],
                 "evidence_time": evidence_time,
-                "lost_policy": "disable_effect_until_track_recovers",
-            }
-        events.append(event)
-        # Independent continuous draws create an aperiodic schedule. The seed,
-        # algorithm, rounded values, and exact events are all serialized.
-        clock = round(clock + rng.uniform(0.61, 2.17), 6)
-        index += 1
-
-    # Tiny inputs still need enough events for a schedule to be auditable.
-    while len(events) < 4:
-        clock = round(clock + rng.uniform(0.61, 2.17), 6)
-        spec = specs[len(events) % len(specs)]
-        ref = by_genre[spec["number"]][0]
-        requires_anchor = spec["slug"] == "3d-cyber-glitch"
-        event = {
-            "event_id": f"fx-{len(events):03d}",
-            "time": clock,
-            "duration": round(rng.uniform(0.08, 0.42), 6),
-            "genre_number": spec["number"],
-            "effect": effect_names.get(spec["slug"], "reference_accent"),
-            "requires_subject_anchor": requires_anchor,
-            "placement": {
-                "safe_area": 0.08,
-                "max_coverage": 0.30 if requires_anchor else 0.35,
-                "occlusion_policy": "preserve_subject_face_and_readable_type",
-                "track_space": "source_normalized",
-            },
-            "evidence": {
-                "reference_sha256": ref["sha256"],
-                "time": 0.0,
-                "style_fingerprint": spec["style_fingerprint"],
-            },
-        }
-        if requires_anchor:
-            event["subject_anchor"] = {
-                "mode": "segmentation_track",
-                "target": "primary_subject",
-                "source_ref_sha256": ref["sha256"],
-                "evidence_time": 0.0,
                 "lost_policy": "disable_effect_until_track_recovers",
             }
         events.append(event)
@@ -289,9 +398,17 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
 
     if config.get("schema_version") != 1:
         raise ValueError("workflow schema_version must be 1")
+    if config.get("dry_run", True) is not True:
+        raise ValueError("workflow requires dry_run=true; provider execution is disabled")
+    source_policy = config.get("source_availability_policy", "allow_unavailable")
+    if source_policy not in {"allow_unavailable", "require_available"}:
+        raise ValueError("source_availability_policy must be allow_unavailable or require_available")
     genres = sorted(config.get("genres", []), key=lambda item: item["number"])
     if not genres:
         raise ValueError("workflow needs at least one numbered genre")
+
+    output = _SafeOutput(out_dir)
+    output.prepare(("genres", "manifests", "resolve"))
 
     references: list[dict[str, Any]] = []
     specs: list[dict[str, Any]] = []
@@ -300,6 +417,7 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
             "schema_version": 1,
             "modality": modality,
             "dry_run": True,
+            "submit": False,
             "provider_calls": 0,
             "provider_execution": False,
             "requests": [],
@@ -351,7 +469,8 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
             for time in ref["probe"].get("scene_changes", [])
         ]
         scene_intervals = [
-            later - earlier for earlier, later in zip(scene_changes, scene_changes[1:])
+            later - earlier
+            for earlier, later in zip(scene_changes, scene_changes[1:])  # noqa: RUF007
         ]
         style_samples = [
             sample
@@ -403,7 +522,7 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
             "dry_run": True,
         }
         specs.append(spec)
-        _write_json(out_dir / "genres" / f"{genre['number']:02d}-{genre['slug']}.json", spec)
+        output.write_json(f"genres/{genre['number']:02d}-{genre['slug']}.json", spec)
 
         evidence = [
             {
@@ -454,6 +573,7 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
                 "endpoint_candidate": endpoint,
                 "endpoint_status": "historical_candidate_unverified_no_network_lookup",
                 "provider_call_mode": "disabled",
+                "provider_calls": 0,
                 "provider_execution": False,
                 "request_body": body,
                 "submit": False,
@@ -462,16 +582,16 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
             })
 
     for modality, manifest in manifests.items():
-        _write_json(out_dir / "manifests" / f"{modality}.json", manifest)
-    _write_json(out_dir / "references.json", references)
-    _write_json(out_dir / "evidence_files.json", evidence_files)
-    _write_json(out_dir / "provenance.json", {
+        output.write_json(f"manifests/{modality}.json", manifest)
+    output.write_json("references.json", references)
+    output.write_json("evidence_files.json", evidence_files)
+    output.write_json("provenance.json", {
         "schema_version": 1,
         "run_id": config["run_id"],
         "rules": provenance_rules,
     })
     effect_recipe = _build_effect_recipe(config, specs, references)
-    _write_json(out_dir / "resolve" / "effect_recipe.json", effect_recipe)
+    output.write_json("resolve/effect_recipe.json", effect_recipe)
 
     def reference_provenance(selected: list[dict[str, Any]]) -> list[dict[str, Any]]:
         return [{
@@ -493,8 +613,8 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
     evidence_artifacts: list[dict[str, Any]] = []
     all_genres = [spec["number"] for spec in specs]
     all_modalities = list(_MODALITIES)
-    for artifact_path in sorted(path for path in out_dir.rglob("*") if path.is_file()):
-        relative = artifact_path.relative_to(out_dir).as_posix()
+    for relative in output.artifact_paths():
+        artifact_path = Path(relative)
         genre_numbers = list(all_genres)
         modalities = list(all_modalities)
         sources = reference_provenance(references)
@@ -524,10 +644,11 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
                 "reference_times": sorted(times),
                 "time_basis": "media_seconds",
             } for digest, times in sorted(exact.items())]
+        artifact_bytes, artifact_sha256 = output.artifact_metadata(relative)
         evidence_artifacts.append({
             "path": relative,
-            "bytes": artifact_path.stat().st_size,
-            "sha256": _sha256(artifact_path),
+            "bytes": artifact_bytes,
+            "sha256": artifact_sha256,
             "genre_numbers": genre_numbers,
             "modalities": modalities,
             "provider_execution": False,
@@ -541,6 +662,7 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
         "dry_run": True,
         "provider_calls": 0,
         "provider_execution": False,
+        "source_availability_policy": source_policy,
         "references": references,
         "evidence_files": evidence_files,
         "evidence_artifacts": evidence_artifacts,
@@ -553,5 +675,6 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
         },
     }
     receipt["receipt_sha256"] = hashlib.sha256(_canonical_bytes(receipt)).hexdigest()
-    _write_json(out_dir / "receipt.json", receipt)
+    output.write_json("receipt.json", receipt)
+    output.close()
     return receipt

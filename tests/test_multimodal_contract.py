@@ -15,6 +15,21 @@ from tasteforge.contract import (
 
 
 class GenreContractTests(unittest.TestCase):
+    def test_empty_avoid_signature_is_rejected(self):
+        spec = {
+            "number": 1,
+            "slug": "flash-ethereal",
+            "style_fingerprint": "a" * 64,
+            "signature": {
+                "materials": ["glass bloom"],
+                "motion": ["hard-cut flash"],
+                "composition": ["centered subject"],
+                "avoid": [],
+            },
+        }
+        with self.assertRaisesRegex(ContractError, "avoid|empty"):
+            validate_genre_specs([spec])
+
     def test_collapsing_references_into_one_generic_style_is_rejected(self):
         generic = {
             "signature": {
@@ -35,11 +50,54 @@ class GenreContractTests(unittest.TestCase):
 
 
 class ResolveRecipeContractTests(unittest.TestCase):
+    def _valid_recipe(self):
+        return {
+            "seed": 41,
+            "rng_algorithm": "python.random.Random/v1",
+            "periodic": False,
+            "timeline_duration": 6.0,
+            "events": [
+                {"time": 0.2, "duration": 0.2, "effect": "bloom", "placement": self._placement()},
+                {"time": 1.1, "duration": 0.2, "effect": "bloom", "placement": self._placement()},
+                {"time": 2.7, "duration": 0.2, "effect": "bloom", "placement": self._placement()},
+                {"time": 5.5, "duration": 0.2, "effect": "bloom", "placement": self._placement()},
+            ],
+        }
+
+    def test_event_start_before_zero_is_rejected(self):
+        recipe = self._valid_recipe()
+        recipe["events"][0]["time"] = -0.01
+        with self.assertRaisesRegex(ContractError, "timeline|start"):
+            validate_effect_recipe(recipe)
+
+    def test_event_end_after_timeline_is_rejected(self):
+        recipe = self._valid_recipe()
+        recipe["events"][-1].update({"time": 5.9, "duration": 0.2})
+        with self.assertRaisesRegex(ContractError, "timeline|end"):
+            validate_effect_recipe(recipe)
+
+    def test_cv_anchor_continue_without_anchor_policy_is_rejected(self):
+        recipe = self._valid_recipe()
+        recipe["events"][1].update({
+            "effect": "cv_wireframe_lock",
+            "requires_subject_anchor": True,
+            "subject_anchor": {
+                "mode": "segmentation_track",
+                "target": "primary_subject",
+                "source_ref_sha256": "a" * 64,
+                "evidence_time": 0.0,
+                "lost_policy": "continue_without_anchor",
+            },
+        })
+        with self.assertRaisesRegex(ContractError, "lost|anchor|fail"):
+            validate_effect_recipe(recipe)
+
     def test_repeating_interval_cycle_is_rejected_as_periodic(self):
         recipe = {
             "seed": 41,
             "rng_algorithm": "python.random.Random/v1",
             "periodic": False,
+            "timeline_duration": 8.0,
             "events": [
                 {"time": 1.0, "effect": "bloom"},
                 {"time": 2.0, "effect": "bloom"},
@@ -83,16 +141,18 @@ class ResolveRecipeContractTests(unittest.TestCase):
             "seed": 41,
             "rng_algorithm": "python.random.Random/v1",
             "periodic": False,
+            "timeline_duration": 9.0,
             "events": [
-                {"time": 1.0, "effect": "bloom"},
+                {"time": 1.0, "duration": 0.2, "effect": "bloom"},
                 {
                     "time": 2.2,
+                    "duration": 0.2,
                     "effect": "cv_boxes",
                     "requires_subject_anchor": True,
                     "subject_anchor": {"mode": "frame_center"},
                 },
-                {"time": 4.9, "effect": "bloom"},
-                {"time": 8.3, "effect": "bloom"},
+                {"time": 4.9, "duration": 0.2, "effect": "bloom"},
+                {"time": 8.3, "duration": 0.2, "effect": "bloom"},
             ],
         }
         with self.assertRaisesRegex(ContractError, "subject anchor"):
@@ -103,12 +163,13 @@ class ResolveRecipeContractTests(unittest.TestCase):
             "seed": 41,
             "rng_algorithm": "python.random.Random/v1",
             "periodic": False,
+            "timeline_duration": 9.0,
             "events": [
-                {"time": 1.0, "effect": "bloom", "placement": self._placement()},
-                {"time": 2.2, "effect": "cv_wireframe_lock",
+                {"time": 1.0, "duration": 0.2, "effect": "bloom", "placement": self._placement()},
+                {"time": 2.2, "duration": 0.2, "effect": "cv_wireframe_lock",
                  "requires_subject_anchor": False, "placement": self._placement()},
-                {"time": 4.9, "effect": "bloom", "placement": self._placement()},
-                {"time": 8.3, "effect": "bloom", "placement": self._placement()},
+                {"time": 4.9, "duration": 0.2, "effect": "bloom", "placement": self._placement()},
+                {"time": 8.3, "duration": 0.2, "effect": "bloom", "placement": self._placement()},
             ],
         }
         with self.assertRaisesRegex(ContractError, "subject anchor"):
@@ -137,6 +198,28 @@ class ProvenanceContractTests(unittest.TestCase):
 
 
 class ManifestContractTests(unittest.TestCase):
+    def test_request_with_dry_run_false_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for modality in ("image", "video", "3d_asset"):
+                (root / f"{modality}.json").write_text(json.dumps({
+                    "modality": modality,
+                    "dry_run": True,
+                    "submit": False,
+                    "provider_calls": 0,
+                    "provider_execution": False,
+                    "requests": [{
+                        "prompt": modality,
+                        "dry_run": modality != "video",
+                        "submit": False,
+                        "provider_calls": 0,
+                        "provider_execution": False,
+                        "provider_call_mode": "disabled",
+                    }],
+                }), encoding="utf-8")
+            with self.assertRaisesRegex(ContractError, "dry-run boundary"):
+                validate_manifests(root)
+
     def test_missing_3d_asset_manifest_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -9,16 +9,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from pathlib import Path
 
 from . import apply as apply_mod
+from . import contract as contract_mod
 from . import distill as distill_mod
 from . import export as export_mod
 from . import interview as interview_mod
 from . import pack as pack_mod
 from . import provenance
-from . import contract as contract_mod
 from . import workflow as workflow_mod
 
 EXIT_OK = 0
@@ -188,6 +189,9 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_FAIL_CLOSED
     except FileNotFoundError as exc:
         print(f"ERROR {exc}", file=sys.stderr)
+        return EXIT_INVALID
+    except subprocess.CalledProcessError:
+        print("ERROR local media processing failed", file=sys.stderr)
         return EXIT_INVALID
     except ValueError as exc:
         print(f"ERROR {exc}", file=sys.stderr)

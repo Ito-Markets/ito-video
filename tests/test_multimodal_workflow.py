@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tasteforge.contract import validate_bundle
+from tasteforge.contract import ContractError, validate_bundle
 from tasteforge.workflow import parse_feature_output, run_workflow
 
 
@@ -129,6 +129,9 @@ class MultimodalWorkflowTests(unittest.TestCase):
         }
         bound = {artifact["path"] for artifact in receipt["evidence_artifacts"]}
         self.assertEqual(bound, emitted)
+        self.assertTrue({
+            "manifests/image.json", "manifests/video.json", "manifests/3d_asset.json"
+        }.issubset(bound))
         self.assertTrue(receipt["evidence_artifacts"])
         for artifact in receipt["evidence_artifacts"]:
             self.assertGreater(artifact["bytes"], 0)
@@ -160,12 +163,18 @@ class MultimodalWorkflowTests(unittest.TestCase):
         for modality in ("image", "video", "3d_asset"):
             manifest = json.loads((out / "manifests" / f"{modality}.json").read_text())
             self.assertEqual(manifest["modality"], modality)
+            self.assertEqual(manifest.get("provider_calls"), 0)
+            self.assertIs(manifest.get("provider_execution"), False)
+            self.assertIs(manifest.get("dry_run"), True)
+            self.assertIs(manifest.get("submit"), False)
             self.assertEqual(len(manifest["requests"]), 3)
             self.assertTrue(all(request["prompt"] for request in manifest["requests"]))
             self.assertTrue(all(request["dry_run"] for request in manifest["requests"]))
             self.assertTrue(all(request["provider_call_mode"] == "disabled" for request in manifest["requests"]))
-            self.assertFalse(manifest["provider_execution"])
-            self.assertTrue(all(request["provider_execution"] is False for request in manifest["requests"]))
+            self.assertTrue(all(request.get("provider_calls") == 0 for request in manifest["requests"]))
+            self.assertTrue(all(request.get("provider_execution") is False for request in manifest["requests"]))
+            self.assertTrue(all(request.get("dry_run") is True for request in manifest["requests"]))
+            self.assertTrue(all(request.get("submit") is False for request in manifest["requests"]))
             self.assertTrue(all(request["endpoint_candidate"] for request in manifest["requests"]))
             self.assertTrue(all(request["request_body"]["prompt"] == request["prompt"]
                                 for request in manifest["requests"]))
@@ -178,6 +187,108 @@ class MultimodalWorkflowTests(unittest.TestCase):
         self.assertTrue(cv_events)
         self.assertTrue(all(event["subject_anchor"]["source_ref_sha256"] for event in cv_events))
         self.assertTrue(all(event["placement"]["max_coverage"] <= 0.35 for event in recipe["events"]))
+
+    def test_symlinked_output_root_is_rejected_before_writes(self):
+        real_output = self.root / "real-output"
+        real_output.mkdir()
+        linked_output = self.root / "linked-output"
+        linked_output.symlink_to(real_output, target_is_directory=True)
+
+        with self.assertRaisesRegex(ValueError, "symlink|output"):
+            run_workflow(self.config_path, linked_output, probe=self.fake_probe)
+
+        self.assertEqual(list(real_output.iterdir()), [])
+
+    def test_symlinked_output_intermediate_is_rejected_without_escape(self):
+        out = self.root / "out"
+        out.mkdir()
+        victim = self.root / "victim"
+        victim.mkdir()
+        (out / "manifests").symlink_to(victim, target_is_directory=True)
+
+        with self.assertRaisesRegex(ValueError, "symlink|output"):
+            run_workflow(self.config_path, out, probe=self.fake_probe)
+
+        self.assertEqual(list(victim.iterdir()), [])
+
+    def test_non_directory_output_intermediate_is_rejected(self):
+        out = self.root / "out"
+        out.mkdir()
+        (out / "genres").write_text("not a directory", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "directory|output"):
+            run_workflow(self.config_path, out, probe=self.fake_probe)
+
+        self.assertEqual((out / "genres").read_text(encoding="utf-8"), "not a directory")
+
+    def test_short_timeline_never_emits_out_of_bounds_forced_events(self):
+        self.config["seed"] = 15
+        self.config["resolve_duration"] = 6.0
+        self.config_path.write_text(json.dumps(self.config), encoding="utf-8")
+        out = self.root / "short-out"
+
+        run_workflow(self.config_path, out, probe=self.fake_probe)
+
+        recipe = json.loads((out / "resolve" / "effect_recipe.json").read_text())
+        timeline = recipe["timeline_duration"]
+        self.assertGreaterEqual(len(recipe["events"]), 3)
+        for event in recipe["events"]:
+            self.assertGreaterEqual(event["time"], 0)
+            self.assertLessEqual(event["time"] + event["duration"], timeline)
+
+    def test_workflow_rejects_dry_run_false_before_output(self):
+        self.config["dry_run"] = False
+        self.config_path.write_text(json.dumps(self.config), encoding="utf-8")
+        out = self.root / "not-dry-run"
+
+        with self.assertRaisesRegex(ValueError, "dry_run|dry-run"):
+            run_workflow(self.config_path, out, probe=self.fake_probe)
+
+        self.assertFalse(out.exists())
+
+    def test_receipt_rehash_rejects_mutated_available_source(self):
+        out = self.root / "mutation-out"
+        run_workflow(self.config_path, out, probe=self.fake_probe)
+
+        self.references[0].write_bytes(b"mutated-after-receipt")
+
+        with self.assertRaisesRegex(ContractError, "source|reference|SHA-256|mutat"):
+            validate_bundle(out)
+
+    def test_explicit_allow_unavailable_policy_supports_offline_validation(self):
+        out = self.root / "offline-out"
+        receipt = run_workflow(self.config_path, out, probe=self.fake_probe)
+        self.assertEqual(receipt.get("source_availability_policy"), "allow_unavailable")
+        for source in [*self.references, self.editorial]:
+            source.unlink()
+
+        validate_bundle(out)
+
+    def test_validation_rejects_symlinked_bundle_root(self):
+        out = self.root / "real-bundle"
+        run_workflow(self.config_path, out, probe=self.fake_probe)
+        linked = self.root / "linked-bundle"
+        linked.symlink_to(out, target_is_directory=True)
+
+        with self.assertRaisesRegex(ContractError, "symlink"):
+            validate_bundle(linked)
+
+    def test_validation_rejects_symlinked_bundle_intermediate(self):
+        out = self.root / "bundle"
+        run_workflow(self.config_path, out, probe=self.fake_probe)
+        external = self.root / "external-manifests"
+        (out / "manifests").rename(external)
+        (out / "manifests").symlink_to(external, target_is_directory=True)
+
+        with self.assertRaisesRegex(ContractError, "symlink"):
+            validate_bundle(out)
+
+    def test_receipt_is_deterministic_across_output_directories(self):
+        first = run_workflow(self.config_path, self.root / "first", probe=self.fake_probe)
+        second = run_workflow(self.config_path, self.root / "second", probe=self.fake_probe)
+
+        self.assertEqual(first, second)
+        self.assertEqual(first["receipt_sha256"], second["receipt_sha256"])
 
 
 if __name__ == "__main__":
