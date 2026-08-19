@@ -21,6 +21,7 @@ __version__ = "1.0.0"
 __all__ = [
     "apply",
     "cli",
+    "contract",
     "distill",
     "export",
     "interview",
@@ -29,4 +30,5 @@ __all__ = [
     "provenance",
     "schema",
     "timeline",
+    "workflow",
 ]

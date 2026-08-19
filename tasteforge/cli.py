@@ -18,6 +18,8 @@ from . import export as export_mod
 from . import interview as interview_mod
 from . import pack as pack_mod
 from . import provenance
+from . import contract as contract_mod
+from . import workflow as workflow_mod
 
 EXIT_OK = 0
 EXIT_INVALID = 1
@@ -99,6 +101,16 @@ def cmd_export(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def cmd_multimodal(args: argparse.Namespace) -> int:
+    """Run and validate the file-driven multimodal dry-run contract."""
+    config = Path(args.config)
+    out_dir = Path(args.out_dir)
+    receipt = workflow_mod.run_workflow(config, out_dir)
+    contract_mod.validate_bundle(out_dir)
+    _print_json(receipt)
+    return EXIT_OK
+
+
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
         prog="tasteforge",
@@ -154,6 +166,14 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--fps", type=float, default=24.0)
     p.add_argument("--title", default="taste-forge")
     p.set_defaults(func=cmd_export)
+
+    p = sub.add_parser(
+        "multimodal",
+        help="file contract -> image/video/3D dry-run manifests and evidence receipt",
+    )
+    p.add_argument("--config", required=True, help="workflow JSON contract")
+    p.add_argument("--out-dir", required=True, help="new evidence bundle directory")
+    p.set_defaults(func=cmd_multimodal)
 
     return ap
 

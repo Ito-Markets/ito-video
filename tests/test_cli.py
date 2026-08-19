@@ -8,6 +8,9 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
+
+from tasteforge import cli
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = REPO_ROOT / "tasteforge" / "fixtures" / "flashethereal"
@@ -44,6 +47,21 @@ def run_cli(*args, expect=0):
 
 
 class CliTests(unittest.TestCase):
+    def test_multimodal_command_routes_file_contract_and_validates_bundle(self):
+        with tempfile.TemporaryDirectory() as td:
+            config = Path(td) / "workflow.json"
+            config.write_text("{}", encoding="utf-8")
+            out = Path(td) / "out"
+            expected = {"provider_calls": 0, "provider_execution": False}
+            with mock.patch(
+                "tasteforge.cli.workflow_mod.run_workflow", return_value=expected
+            ) as run, mock.patch("tasteforge.cli.contract_mod.validate_bundle") as validate:
+                status = cli.main([
+                    "multimodal", "--config", str(config), "--out-dir", str(out)
+                ])
+            self.assertEqual(status, 0)
+            run.assert_called_once_with(config, out)
+            validate.assert_called_once_with(out)
     def test_provenance_subcommand(self):
         proc = run_cli("provenance", "--json")
         self.assertEqual(proc.returncode, 0, proc.stderr)

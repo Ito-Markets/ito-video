@@ -20,6 +20,7 @@ python3 -m tasteforge interview --answers a.json --genre NAME [--out profile.jso
 python3 -m tasteforge distill --profile profile.json [--pack <pack-dir>] [--out spec.json]
 python3 -m tasteforge apply --pack <pack-dir> --media media.json [--duration 20] [--out report.json]
 python3 -m tasteforge export --events events.json [--out-dir out] [--fps 24] [--title cut]
+python3 -m tasteforge multimodal --config workflow.json --out-dir out/multimodal
 ```
 
 `--live` on `distill`/`apply` is refused (exit 2): provider generation
@@ -42,6 +43,21 @@ Outputs:
   enum-locked to `"none"`) with planned shots and frame-exact timeline events
 - `export` → CMX3600 `<title>.edl` + FCPXML 1.9 `<title>.fcpxml` with
   rational, frame-quantised times (NTSC-safe)
+- `multimodal` → distinct numbered genre specs, separate image/video/3D-asset
+  request manifests, a seeded aperiodic Resolve effect recipe, and a receipt
+  that binds every emitted artifact by relative path, byte size, SHA-256,
+  genre, modality, `provider_execution: false`, and exact reference/time
+  provenance. It requires local `ffprobe` and `ffmpeg` for measured media
+  features and never submits a request.
+
+The multimodal JSON contract has `schema_version`, `run_id`, integer `seed`,
+optional `evidence_files`, and `genres`. Each genre has a distinct `number`,
+`slug`, `label`, local `references`, and non-empty `signature` lists for
+`materials`, `motion`, `composition`, and `avoid`. Relative input paths resolve
+from the config file's directory. Run output through `validate_bundle`; missing
+modalities, genericized genres, periodic schedules, unanchored CV effects,
+unsafe placement, unbound/tampered artifacts, or any provider-execution flag
+fail closed.
 
 ## Offline fixture
 
