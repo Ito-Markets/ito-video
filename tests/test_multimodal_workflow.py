@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -188,6 +189,20 @@ class MultimodalWorkflowTests(unittest.TestCase):
         self.assertTrue(all(event["subject_anchor"]["source_ref_sha256"] for event in cv_events))
         self.assertTrue(all(event["placement"]["max_coverage"] <= 0.35 for event in recipe["events"]))
 
+    def test_probe_and_hash_use_stable_bytes_and_fail_on_source_mutation(self):
+        original = self.references[0].read_bytes()
+        observed = []
+
+        def mutating_probe(snapshot: Path) -> dict:
+            observed.append(snapshot.read_bytes())
+            self.references[0].write_bytes(b"mutated-during-probe")
+            return self.fake_probe(snapshot)
+
+        with self.assertRaisesRegex(ValueError, "mutat|changed|stable"):
+            run_workflow(self.config_path, self.root / "race-out", probe=mutating_probe)
+
+        self.assertEqual(observed, [original])
+
     def test_symlinked_output_root_is_rejected_before_writes(self):
         real_output = self.root / "real-output"
         real_output.mkdir()
@@ -245,6 +260,54 @@ class MultimodalWorkflowTests(unittest.TestCase):
             run_workflow(self.config_path, out, probe=self.fake_probe)
 
         self.assertFalse(out.exists())
+
+    def test_bundle_receipt_requires_exact_disabled_provider_state(self):
+        for field, unsafe in (
+            ("dry_run", False),
+            ("provider_calls", False),
+            ("provider_calls", 1),
+            ("provider_execution", True),
+        ):
+            with self.subTest(field=field, unsafe=unsafe):
+                out = self.root / f"receipt-provider-{field}-{unsafe!s}"
+                run_workflow(self.config_path, out, probe=self.fake_probe)
+                receipt_path = out / "receipt.json"
+                receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+                receipt[field] = unsafe
+                digest_payload = dict(receipt)
+                digest_payload.pop("receipt_sha256")
+                receipt["receipt_sha256"] = hashlib.sha256(
+                    json.dumps(digest_payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+                ).hexdigest()
+                receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+                with self.assertRaisesRegex(ContractError, "dry-run boundary"):
+                    validate_bundle(out)
+
+    def test_receipt_binds_source_duration_and_rejects_out_of_range_times(self):
+        for label in ("duration", "time"):
+            with self.subTest(field=label):
+                out = self.root / f"receipt-bound-{label}"
+                run_workflow(self.config_path, out, probe=self.fake_probe)
+                receipt_path = out / "receipt.json"
+                receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+                if label == "duration":
+                    receipt["references"][0]["source_duration"] = 7.0
+                else:
+                    artifact = next(
+                        item for item in receipt["evidence_artifacts"]
+                        if item["provenance"][0]["time_basis"] == "media_seconds"
+                    )
+                    artifact["provenance"][0]["reference_times"] = [6.1]
+                digest_payload = dict(receipt)
+                digest_payload.pop("receipt_sha256")
+                receipt["receipt_sha256"] = hashlib.sha256(
+                    json.dumps(digest_payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+                ).hexdigest()
+                receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+                with self.assertRaisesRegex(ContractError, "duration|time|evidence"):
+                    validate_bundle(out)
 
     def test_receipt_rehash_rejects_mutated_available_source(self):
         out = self.root / "mutation-out"

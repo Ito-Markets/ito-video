@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import random
 import re
@@ -17,12 +18,17 @@ import shutil
 import stat
 import statistics
 import subprocess
+import tempfile
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 Probe = Callable[[Path], dict[str, Any]]
 _MODALITIES = ("image", "video", "3d_asset")
+
+
+class MediaToolUnavailable(RuntimeError):
+    """A required local media executable is unavailable."""
 
 
 def _canonical_bytes(value: Any) -> bytes:
@@ -35,6 +41,128 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _hash_descriptor(descriptor: int) -> tuple[int, str]:
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    digest = hashlib.sha256()
+    total = 0
+    while True:
+        chunk = os.read(descriptor, 1024 * 1024)
+        if not chunk:
+            break
+        total += len(chunk)
+        digest.update(chunk)
+    return total, digest.hexdigest()
+
+
+def _stable_probe(path: Path, probe: Probe) -> tuple[dict[str, Any], int, str]:
+    """Probe a private snapshot while binding the digest to one stable source object."""
+    if not hasattr(os, "O_NOFOLLOW"):
+        raise ValueError("stable source probing requires O_NOFOLLOW")
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError("reference source must be a regular file")
+        with tempfile.TemporaryDirectory(prefix="tasteforge-source-") as temporary:
+            snapshot = Path(temporary) / f"source{path.suffix}"
+            snapshot_fd = os.open(
+                snapshot, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600
+            )
+            try:
+                os.lseek(descriptor, 0, os.SEEK_SET)
+                digest = hashlib.sha256()
+                total = 0
+                while True:
+                    chunk = os.read(descriptor, 1024 * 1024)
+                    if not chunk:
+                        break
+                    total += len(chunk)
+                    digest.update(chunk)
+                    view = memoryview(chunk)
+                    while view:
+                        written = os.write(snapshot_fd, view)
+                        if written <= 0:
+                            raise ValueError("stable source snapshot write made no progress")
+                        view = view[written:]
+                os.fsync(snapshot_fd)
+            finally:
+                os.close(snapshot_fd)
+            source_digest = digest.hexdigest()
+            copied = os.fstat(descriptor)
+            if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) != (
+                copied.st_dev, copied.st_ino, copied.st_size, copied.st_mtime_ns
+            ):
+                raise ValueError("reference source mutated while creating stable snapshot")
+            verified_size, verified_digest = _hash_descriptor(descriptor)
+            if verified_size != total or verified_digest != source_digest:
+                raise ValueError("reference source mutated while creating stable snapshot")
+
+            measured = probe(snapshot)
+
+            after = os.fstat(descriptor)
+            final_size, final_digest = _hash_descriptor(descriptor)
+            if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) != (
+                after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns
+            ) or final_size != total or final_digest != source_digest:
+                raise ValueError("reference source mutated during media probing")
+            rebound = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+            try:
+                rebound_stat = os.fstat(rebound)
+                if (rebound_stat.st_dev, rebound_stat.st_ino) != (before.st_dev, before.st_ino):
+                    raise ValueError("reference source identity changed during media probing")
+            finally:
+                os.close(rebound)
+            return measured, total, source_digest
+    finally:
+        os.close(descriptor)
+
+
+def _finite_real(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def _validate_probe(measured: dict[str, Any]) -> float:
+    def require_finite_evidence(value: Any) -> None:
+        if isinstance(value, bool):
+            raise ValueError(  # noqa: TRY004 - one bounded invalid-media error family
+                "reference probe numeric evidence must be finite real values"
+            )
+        if isinstance(value, (int, float)):
+            if not math.isfinite(value):
+                raise ValueError("reference probe numeric evidence must be finite real values")
+        elif isinstance(value, dict):
+            for nested in value.values():
+                require_finite_evidence(nested)
+        elif isinstance(value, list):
+            for nested in value:
+                require_finite_evidence(nested)
+
+    require_finite_evidence(measured)
+    duration = measured.get("duration")
+    if not _finite_real(duration):
+        raise ValueError("reference probe duration must be finite and positive")
+    duration = cast(float, duration)
+    if float(duration) <= 0:
+        raise ValueError("reference probe duration must be finite and positive")
+    for field in ("sample_times", "scene_changes"):
+        values = measured.get(field, [])
+        if not isinstance(values, list) or any(
+            not _finite_real(value) or float(value) < 0 or float(value) > float(duration)
+            for value in values
+        ):
+            raise ValueError(f"reference probe {field} must contain finite in-duration times")
+    samples = measured.get("style_samples", [])
+    if not isinstance(samples, list) or any(
+        not isinstance(sample, dict)
+        or not _finite_real(sample.get("time"))
+        or float(cast(float, sample["time"])) < 0
+        or float(cast(float, sample["time"])) > float(duration)
+        for sample in samples
+    ):
+        raise ValueError("reference style evidence times must be finite and within duration")
+    return float(duration)
 
 
 class _SafeOutput:
@@ -220,7 +348,7 @@ def parse_feature_output(output: str, *, scene_threshold: float = 0.30) -> dict[
 def _run_ffmpeg_features(path: Path) -> dict[str, Any]:
     ffmpeg = shutil.which("ffmpeg")
     if not ffmpeg:
-        raise RuntimeError("ffmpeg is required for temporal/style feature extraction")
+        raise MediaToolUnavailable("ffmpeg is required for temporal/style feature extraction")
     filters = (
         "scale=320:-2,"
         "select='not(mod(n\\,12))+gt(scene\\,0.30)',"
@@ -240,7 +368,7 @@ def probe_media(path: Path) -> dict[str, Any]:
     """Probe local media and extract timestamped style/temporal features."""
     ffprobe = shutil.which("ffprobe")
     if not ffprobe:
-        raise RuntimeError("ffprobe is required for reference probing")
+        raise MediaToolUnavailable("ffprobe is required for reference probing")
     command = [
         ffprobe, "-v", "error", "-show_streams", "-show_format",
         "-of", "json", str(path),
@@ -305,7 +433,12 @@ def _build_effect_recipe(
         spec["number"]: [ref for ref in references if ref["genre_number"] == spec["number"]]
         for spec in specs
     }
-    duration = float(config.get("resolve_duration") or sum(
+    configured_duration = config.get("resolve_duration")
+    if configured_duration is not None and (
+        not _finite_real(configured_duration) or float(configured_duration) <= 0
+    ):
+        raise ValueError("resolve_duration must be finite and positive")
+    duration = float(configured_duration or sum(
         spec["measured_features"]["total_duration"] for spec in specs
     ))
     duration = max(duration, 6.0)
@@ -334,6 +467,7 @@ def _build_effect_recipe(
         ref = by_genre[spec["number"]][index % len(by_genre[spec["number"]])]
         sample_times = ref["probe"].get("sample_times", [])
         evidence_time = float(sample_times[index % len(sample_times)]) if sample_times else 0.0
+        source_duration = ref["source_duration"]
         requires_anchor = spec["slug"] == "3d-cyber-glitch"
         event_duration = round(min(rng.uniform(0.08, 0.42), duration - clock), 6)
         event: dict[str, Any] = {
@@ -352,6 +486,7 @@ def _build_effect_recipe(
             "evidence": {
                 "reference_sha256": ref["sha256"],
                 "time": evidence_time,
+                "source_duration": source_duration,
                 "style_fingerprint": spec["style_fingerprint"],
             },
         }
@@ -361,6 +496,7 @@ def _build_effect_recipe(
                 "target": "primary_subject",
                 "source_ref_sha256": ref["sha256"],
                 "evidence_time": evidence_time,
+                "source_duration": source_duration,
                 "lost_policy": "disable_effect_until_track_recovers",
             }
         events.append(event)
@@ -369,6 +505,7 @@ def _build_effect_recipe(
         "schema_version": 1,
         "dry_run": True,
         "provider_calls": 0,
+        "provider_execution": False,
         "seed": seed,
         "rng_algorithm": "python.random.Random/v1",
         "periodic": False,
@@ -394,7 +531,7 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
         candidate = Path(raw_path).expanduser()
         if not candidate.is_absolute():
             candidate = config_path.parent / candidate
-        return candidate.resolve()
+        return Path(os.path.abspath(candidate))
 
     if config.get("schema_version") != 1:
         raise ValueError("workflow schema_version must be 1")
@@ -448,13 +585,15 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
             path = resolve_input(raw_path)
             if not path.is_file():
                 raise FileNotFoundError(path)
-            measured = probe(path)
+            measured, source_bytes, source_digest = _stable_probe(path, probe)
+            source_duration = _validate_probe(measured)
             ref = {
                 "genre_number": genre["number"],
                 "genre_slug": genre["slug"],
                 "path": str(path),
-                "bytes": path.stat().st_size,
-                "sha256": _sha256(path),
+                "bytes": source_bytes,
+                "sha256": source_digest,
+                "source_duration": source_duration,
                 "probe": measured,
             }
             references.append(ref)
@@ -463,11 +602,12 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
         if not genre_refs:
             raise ValueError(f"genre {genre['slug']} has no references")
         total_duration = round(sum(float(ref["probe"].get("duration") or 0) for ref in genre_refs), 6)
-        scene_changes = [
-            float(time)
-            for ref in genre_refs
-            for time in ref["probe"].get("scene_changes", [])
-        ]
+        scene_change_evidence = [{
+            "sha256": ref["sha256"],
+            "source_duration": ref["source_duration"],
+            "times": [float(time) for time in ref["probe"].get("scene_changes", [])],
+        } for ref in genre_refs]
+        scene_changes = [time for item in scene_change_evidence for time in item["times"]]
         scene_intervals = [
             later - earlier
             for earlier, later in zip(scene_changes, scene_changes[1:])  # noqa: RUF007
@@ -487,12 +627,16 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
             "reference_count": len(genre_refs),
             "total_duration": total_duration,
             "sample_times": [
-                {"sha256": ref["sha256"], "times": ref["probe"].get("sample_times", [])}
+                {
+                    "sha256": ref["sha256"],
+                    "source_duration": ref["source_duration"],
+                    "times": ref["probe"].get("sample_times", []),
+                }
                 for ref in genre_refs
             ],
             "temporal": {
                 "scene_change_count": len(scene_changes),
-                "scene_changes": scene_changes,
+                "scene_change_evidence": scene_change_evidence,
                 "scene_interval_mean": (
                     round(statistics.fmean(scene_intervals), 6) if scene_intervals else 0.0
                 ),
@@ -528,6 +672,7 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
             {
                 "reference_sha256": ref["sha256"],
                 "times": ref["probe"].get("sample_times", []),
+                "source_duration": ref["source_duration"],
                 "feature_keys": ["duration", "fps", "style_samples", "scene_changes"],
             }
             for ref in genre_refs
@@ -593,13 +738,20 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
     effect_recipe = _build_effect_recipe(config, specs, references)
     output.write_json("resolve/effect_recipe.json", effect_recipe)
 
+    def all_probe_times(ref: dict[str, Any]) -> list[float]:
+        probe_payload = ref["probe"]
+        return sorted({
+            *[float(time) for time in probe_payload.get("sample_times", [])],
+            *[float(time) for time in probe_payload.get("scene_changes", [])],
+            *[float(sample["time"]) for sample in probe_payload.get("style_samples", [])],
+        })
+
     def reference_provenance(selected: list[dict[str, Any]]) -> list[dict[str, Any]]:
         return [{
             "reference_path": ref["path"],
             "reference_sha256": ref["sha256"],
-            "reference_times": sorted({
-                float(time) for time in ref["probe"].get("sample_times", [])
-            }),
+            "reference_times": all_probe_times(ref),
+            "source_duration": ref["source_duration"],
             "time_basis": "media_seconds",
         } for ref in selected]
 
@@ -642,6 +794,7 @@ def run_workflow(config_path: str | Path, out_dir: str | Path, *, probe: Probe |
                 "reference_path": source_by_digest[digest]["path"],
                 "reference_sha256": digest,
                 "reference_times": sorted(times),
+                "source_duration": source_by_digest[digest]["source_duration"],
                 "time_basis": "media_seconds",
             } for digest, times in sorted(exact.items())]
         artifact_bytes, artifact_sha256 = output.artifact_metadata(relative)

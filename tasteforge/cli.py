@@ -193,6 +193,9 @@ def main(argv: list[str] | None = None) -> int:
     except subprocess.CalledProcessError:
         print("ERROR local media processing failed", file=sys.stderr)
         return EXIT_INVALID
+    except workflow_mod.MediaToolUnavailable:
+        print("ERROR local media processing unavailable", file=sys.stderr)
+        return EXIT_INVALID
     except ValueError as exc:
         print(f"ERROR {exc}", file=sys.stderr)
         return EXIT_INVALID

@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import stat
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 _REQUIRED_MODALITIES = {"image", "video", "3d_asset"}
 _SIGNATURE_AXES = {"materials", "motion", "composition", "avoid"}
@@ -16,6 +17,54 @@ _SIGNATURE_AXES = {"materials", "motion", "composition", "avoid"}
 
 class ContractError(ValueError):
     """The dry-run bundle is incomplete or has lost taste specificity."""
+
+
+def _is_finite_real(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def _validate_media_time(value: Any, source_duration: Any, *, label: str) -> None:
+    if not _is_finite_real(source_duration):
+        raise ContractError(f"{label} has an invalid finite source duration")
+    source_duration = cast(float, source_duration)
+    if float(source_duration) <= 0:
+        raise ContractError(f"{label} has an invalid finite source duration")
+    if (not _is_finite_real(value) or float(value) < 0
+            or float(value) > float(source_duration)):
+        raise ContractError(f"{label} is outside its source duration")
+
+
+def _validate_numeric_evidence(value: Any, *, label: str) -> None:
+    if isinstance(value, bool):
+        raise ContractError(f"{label} contains a boolean numeric value")
+    if isinstance(value, (int, float)):
+        if not math.isfinite(value):
+            raise ContractError(f"{label} contains a non-finite numeric value")
+    elif isinstance(value, dict):
+        for nested in value.values():
+            _validate_numeric_evidence(nested, label=label)
+    elif isinstance(value, list):
+        for nested in value:
+            _validate_numeric_evidence(nested, label=label)
+
+
+def _validate_probe_evidence(probe: Any, source_duration: float, *, label: str) -> None:
+    if not isinstance(probe, dict):
+        raise ContractError(f"{label} lacks probe evidence")
+    _validate_numeric_evidence(probe, label=label)
+    if probe.get("duration") != source_duration:
+        raise ContractError(f"{label} probe duration is not bound to source duration")
+    for field in ("sample_times", "scene_changes"):
+        values = probe.get(field, [])
+        if not isinstance(values, list):
+            raise ContractError(f"{label} has invalid {field}")
+        for value in values:
+            _validate_media_time(value, source_duration, label=f"{label} {field}")
+    samples = probe.get("style_samples", [])
+    if not isinstance(samples, list) or any(not isinstance(sample, dict) for sample in samples):
+        raise ContractError(f"{label} has invalid style evidence")
+    for sample in samples:
+        _validate_media_time(sample.get("time"), source_duration, label=f"{label} style evidence")
 
 
 def _sha256(path: Path) -> str:
@@ -79,6 +128,39 @@ def validate_genre_specs(specs: list[dict[str, Any]]) -> None:
         raise ContractError("genre references collapsed into a generic style; distinct specs required")
 
     for spec in specs:
+        if spec.get("dry_run") is not True:
+            raise ContractError(f"genre {spec.get('number')} crosses the dry-run boundary")
+        measured = spec.get("measured_features")
+        if measured is not None:
+            if not isinstance(measured, dict):
+                raise ContractError(f"genre {spec.get('number')} has invalid measured evidence")
+            _validate_numeric_evidence(measured, label=f"genre {spec.get('number')} evidence")
+            total_duration = measured.get("total_duration")
+            if not _is_finite_real(total_duration):
+                raise ContractError(f"genre {spec.get('number')} has invalid total duration")
+            total_duration = cast(float, total_duration)
+            if float(total_duration) <= 0:
+                raise ContractError(f"genre {spec.get('number')} has invalid total duration")
+            for group_name in ("sample_times",):
+                groups = measured.get(group_name, [])
+                if not isinstance(groups, list):
+                    raise ContractError(f"genre {spec.get('number')} has invalid time evidence")
+                for group in groups:
+                    if not isinstance(group, dict):
+                        raise ContractError(f"genre {spec.get('number')} has invalid time evidence")
+                    for time in group.get("times", []):
+                        _validate_media_time(
+                            time, group.get("source_duration"),
+                            label=f"genre {spec.get('number')} time evidence",
+                        )
+            temporal = measured.get("temporal", {})
+            if isinstance(temporal, dict):
+                for group in temporal.get("scene_change_evidence", []):
+                    for time in group.get("times", []):
+                        _validate_media_time(
+                            time, group.get("source_duration"),
+                            label=f"genre {spec.get('number')} scene evidence",
+                        )
         signature = spec.get("signature")
         if not isinstance(signature, dict) or not _SIGNATURE_AXES.issubset(signature):
             raise ContractError(f"genre {spec.get('number')} has an incomplete signature")
@@ -90,6 +172,11 @@ def validate_genre_specs(specs: list[dict[str, Any]]) -> None:
 
 def validate_effect_recipe(recipe: dict[str, Any]) -> None:
     """Require a seeded aperiodic schedule and anchors on subject-aware effects."""
+    if (recipe.get("dry_run") is not True
+            or type(recipe.get("provider_calls")) is not int
+            or recipe.get("provider_calls") != 0
+            or recipe.get("provider_execution") is not False):
+        raise ContractError("effect recipe crosses the dry-run provider boundary")
     if not isinstance(recipe.get("seed"), int) or isinstance(recipe.get("seed"), bool):
         raise ContractError("effect recipe must have an integer seed")
     if recipe.get("rng_algorithm") != "python.random.Random/v1":
@@ -98,9 +185,27 @@ def validate_effect_recipe(recipe: dict[str, Any]) -> None:
     if not isinstance(events, list) or len(events) < 3:
         raise ContractError("effect recipe needs at least three scheduled events")
     timeline = recipe.get("timeline_duration")
-    if (not isinstance(timeline, (int, float)) or isinstance(timeline, bool)
-            or not 0 < float(timeline)):
-        raise ContractError("effect recipe must declare a positive timeline duration")
+    if not _is_finite_real(timeline):
+        raise ContractError("effect recipe must declare a finite positive timeline duration")
+    timeline = cast(float, timeline)
+    if float(timeline) <= 0:
+        raise ContractError("effect recipe must declare a finite positive timeline duration")
+    for event in events:
+        start = event.get("time")
+        duration = event.get("duration")
+        if (not _is_finite_real(start) or not _is_finite_real(duration)
+                or float(start) < 0 or float(duration) <= 0):
+            raise ContractError("effect event start and duration must be finite positive timeline values")
+        start = cast(float, start)
+        duration = cast(float, duration)
+        if float(start) + float(duration) > float(timeline) + 1e-9:
+            raise ContractError("effect event end exceeds the declared timeline")
+        evidence = event.get("evidence")
+        if not isinstance(evidence, dict):
+            raise ContractError(f"effect {event.get('effect')} lacks reference evidence")
+        _validate_media_time(
+            evidence.get("time"), evidence.get("source_duration"), label="effect evidence time"
+        )
     times = [float(event["time"]) for event in events]
     if times != sorted(times) or len(times) != len(set(times)):
         raise ContractError("effect event times must be unique and increasing")
@@ -113,26 +218,25 @@ def validate_effect_recipe(recipe: dict[str, Any]) -> None:
     if recipe.get("periodic") is not False:
         raise ContractError("effect recipe must explicitly declare periodic=false")
     for event in events:
-        start = event.get("time")
-        duration = event.get("duration")
-        if (not isinstance(start, (int, float)) or isinstance(start, bool)
-                or not isinstance(duration, (int, float)) or isinstance(duration, bool)
-                or float(start) < 0 or float(duration) <= 0):
-            raise ContractError("effect event start and duration must be positive timeline values")
-        if float(start) + float(duration) > float(timeline) + 1e-9:
-            raise ContractError("effect event end exceeds the declared timeline")
         cv_effect = str(event.get("effect", "")).startswith("cv_")
         if cv_effect and event.get("requires_subject_anchor") is not True:
             raise ContractError(f"CV effect {event.get('effect')} must require a subject anchor")
         if event.get("requires_subject_anchor"):
             anchor = event.get("subject_anchor")
-            required = {"mode", "target", "source_ref_sha256", "evidence_time", "lost_policy"}
+            required = {
+                "mode", "target", "source_ref_sha256", "evidence_time",
+                "source_duration", "lost_policy",
+            }
             if not isinstance(anchor, dict) or not required.issubset(anchor):
                 raise ContractError(f"CV effect {event.get('effect')} lacks a valid subject anchor")
             if anchor.get("mode") not in {"object_track", "point_track", "segmentation_track"}:
                 raise ContractError(f"CV effect {event.get('effect')} has an invalid subject anchor")
             if anchor.get("lost_policy") != "disable_effect_until_track_recovers":
                 raise ContractError(f"CV effect {event.get('effect')} must fail closed on anchor loss")
+            _validate_media_time(
+                anchor.get("evidence_time"), anchor.get("source_duration"),
+                label="anchor evidence time",
+            )
     for event in events:
         placement = event.get("placement")
         if not isinstance(placement, dict) or not {"safe_area", "max_coverage", "occlusion_policy"}.issubset(placement):
@@ -155,8 +259,11 @@ def validate_provenance(payload: dict[str, Any]) -> None:
             times = item.get("times")
             if not isinstance(times, list) or not times:
                 raise ContractError(f"rule {rule.get('rule_id')} lacks time evidence")
-            if not all(isinstance(time, (int, float)) and time >= 0 for time in times):
-                raise ContractError(f"rule {rule.get('rule_id')} has invalid time evidence")
+            source_duration = item.get("source_duration")
+            for time in times:
+                _validate_media_time(
+                    time, source_duration, label=f"rule {rule.get('rule_id')} time evidence"
+                )
 
 
 def validate_manifests(manifests_dir: str | Path) -> None:
@@ -192,6 +299,7 @@ def validate_artifact_receipt(out_dir: str | Path, receipt: dict[str, Any]) -> N
     if not all(isinstance(entry, dict) for entry in entries):
         raise ContractError("receipt evidence_artifacts entries must be objects")
     known_sources: set[tuple[str, str]] = set()
+    source_durations: dict[tuple[str, str], float] = {}
     for key in ("references", "evidence_files"):
         sources = receipt.get(key, [])
         if not isinstance(sources, list):
@@ -206,6 +314,17 @@ def validate_artifact_receipt(out_dir: str | Path, receipt: dict[str, Any]) -> N
                     or not re.fullmatch(r"[0-9a-f]{64}", expected_digest)):
                 raise ContractError("receipt has an invalid source identity")
             known_sources.add((source_path, expected_digest))
+            if key == "references":
+                source_duration = source.get("source_duration")
+                if not _is_finite_real(source_duration):
+                    raise ContractError("receipt reference has an invalid finite source duration")
+                source_duration = cast(float, source_duration)
+                if float(source_duration) <= 0:
+                    raise ContractError("receipt reference has an invalid finite source duration")
+                source_durations[(source_path, expected_digest)] = float(source_duration)
+                _validate_probe_evidence(
+                    source.get("probe"), float(source_duration), label="receipt reference"
+                )
     source_policy = receipt.get("source_availability_policy")
     if known_sources and source_policy not in {"allow_unavailable", "require_available"}:
         raise ContractError("receipt must declare an explicit source availability policy")
@@ -289,8 +408,15 @@ def validate_artifact_receipt(out_dir: str | Path, receipt: dict[str, Any]) -> N
                 raise ContractError(f"artifact {relative} lacks media reference times")
             if basis == "whole_file" and times:
                 raise ContractError(f"artifact {relative} whole-file provenance must not invent times")
-            if not all(isinstance(time, (int, float)) and time >= 0 for time in times):
-                raise ContractError(f"artifact {relative} has invalid media reference times")
+            if basis == "media_seconds":
+                expected_duration = source_durations.get((source["reference_path"], digest))
+                if expected_duration is None or source.get("source_duration") != expected_duration:
+                    raise ContractError(f"artifact {relative} has an unbound source duration")
+                for time in times:
+                    _validate_media_time(
+                        time, expected_duration,
+                        label=f"artifact {relative} media reference time",
+                    )
 
     digest_payload = dict(receipt)
     claimed_digest = digest_payload.pop("receipt_sha256", None)
@@ -324,6 +450,9 @@ def validate_bundle(out_dir: str | Path) -> None:
     if not receipt_path.is_file():
         raise ContractError("missing receipt")
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-    if receipt.get("provider_execution") is not False or receipt.get("provider_calls") != 0:
+    if (receipt.get("dry_run") is not True
+            or receipt.get("provider_execution") is not False
+            or type(receipt.get("provider_calls")) is not int
+            or receipt.get("provider_calls") != 0):
         raise ContractError("receipt crosses the dry-run boundary")
     validate_artifact_receipt(out_dir, receipt)

@@ -15,6 +15,22 @@ from tasteforge.contract import (
 
 
 class GenreContractTests(unittest.TestCase):
+    def test_genre_spec_requires_explicit_dry_run_true(self):
+        spec = {
+            "number": 1,
+            "slug": "flash-ethereal",
+            "style_fingerprint": "a" * 64,
+            "signature": {
+                "materials": ["glass bloom"],
+                "motion": ["hard-cut flash"],
+                "composition": ["centered subject"],
+                "avoid": ["muddy shadows"],
+            },
+            "dry_run": False,
+        }
+        with self.assertRaisesRegex(ContractError, "dry-run|dry_run"):
+            validate_genre_specs([spec])
+
     def test_empty_avoid_signature_is_rejected(self):
         spec = {
             "number": 1,
@@ -26,6 +42,7 @@ class GenreContractTests(unittest.TestCase):
                 "composition": ["centered subject"],
                 "avoid": [],
             },
+            "dry_run": True,
         }
         with self.assertRaisesRegex(ContractError, "avoid|empty"):
             validate_genre_specs([spec])
@@ -51,7 +68,10 @@ class GenreContractTests(unittest.TestCase):
 
 class ResolveRecipeContractTests(unittest.TestCase):
     def _valid_recipe(self):
-        return {
+        recipe = {
+            "dry_run": True,
+            "provider_calls": 0,
+            "provider_execution": False,
             "seed": 41,
             "rng_algorithm": "python.random.Random/v1",
             "periodic": False,
@@ -63,6 +83,91 @@ class ResolveRecipeContractTests(unittest.TestCase):
                 {"time": 5.5, "duration": 0.2, "effect": "bloom", "placement": self._placement()},
             ],
         }
+        for event in recipe["events"]:
+            event["evidence"] = {
+                "reference_sha256": "a" * 64,
+                "time": 0.5,
+                "source_duration": 6.0,
+            }
+        return recipe
+
+    def test_numeric_timeline_and_evidence_values_must_be_finite_reals(self):
+        cases = (
+            ("timeline_duration", None, float("nan")),
+            ("timeline_duration", None, float("inf")),
+            ("timeline_duration", None, True),
+            ("time", 0, float("nan")),
+            ("time", 0, float("inf")),
+            ("time", 0, True),
+            ("duration", 0, float("nan")),
+            ("duration", 0, float("inf")),
+            ("duration", 0, True),
+        )
+        for field, event_index, unsafe in cases:
+            with self.subTest(field=field, unsafe=unsafe):
+                recipe = self._valid_recipe()
+                target = recipe if event_index is None else recipe["events"][event_index]
+                target[field] = unsafe
+                with self.assertRaisesRegex(ContractError, "finite|timeline|duration|start"):
+                    validate_effect_recipe(recipe)
+
+    def test_effect_evidence_time_must_be_within_finite_source_duration(self):
+        for field, unsafe in (
+            ("time", float("nan")),
+            ("time", float("inf")),
+            ("time", True),
+            ("time", 6.1),
+            ("source_duration", float("nan")),
+            ("source_duration", float("inf")),
+            ("source_duration", True),
+        ):
+            with self.subTest(field=field, unsafe=unsafe):
+                recipe = self._valid_recipe()
+                recipe["events"][0]["evidence"][field] = unsafe
+                with self.assertRaisesRegex(ContractError, "evidence|source duration"):
+                    validate_effect_recipe(recipe)
+
+    def test_effect_recipe_requires_exact_disabled_provider_state(self):
+        for field, unsafe in (
+            ("dry_run", False),
+            ("provider_calls", 1),
+            ("provider_calls", False),
+            ("provider_execution", True),
+        ):
+            with self.subTest(field=field):
+                recipe = self._valid_recipe()
+                recipe[field] = unsafe
+                with self.assertRaisesRegex(ContractError, "dry-run|provider"):
+                    validate_effect_recipe(recipe)
+
+    def test_anchor_evidence_time_must_be_within_finite_source_duration(self):
+        for field, unsafe in (
+            ("evidence_time", float("nan")),
+            ("evidence_time", float("inf")),
+            ("evidence_time", True),
+            ("evidence_time", 6.1),
+            ("source_duration", float("nan")),
+            ("source_duration", float("inf")),
+            ("source_duration", True),
+        ):
+            with self.subTest(field=field, unsafe=unsafe):
+                recipe = self._valid_recipe()
+                event = recipe["events"][1]
+                event.update({
+                    "effect": "cv_wireframe_lock",
+                    "requires_subject_anchor": True,
+                    "subject_anchor": {
+                        "mode": "segmentation_track",
+                        "target": "primary_subject",
+                        "source_ref_sha256": "a" * 64,
+                        "evidence_time": 0.5,
+                        "source_duration": 6.0,
+                        "lost_policy": "disable_effect_until_track_recovers",
+                    },
+                })
+                event["subject_anchor"][field] = unsafe
+                with self.assertRaisesRegex(ContractError, "anchor evidence|source duration"):
+                    validate_effect_recipe(recipe)
 
     def test_event_start_before_zero_is_rejected(self):
         recipe = self._valid_recipe()
@@ -106,6 +211,7 @@ class ResolveRecipeContractTests(unittest.TestCase):
                 {"time": 7.0, "effect": "bloom"},
             ],
         }
+        recipe = self._complete_recipe(recipe)
         with self.assertRaisesRegex(ContractError, "periodic"):
             validate_effect_recipe(recipe)
 
@@ -120,6 +226,7 @@ class ResolveRecipeContractTests(unittest.TestCase):
                 {"time": 8.3, "effect": "bloom"},
             ],
         }
+        recipe = self._complete_recipe(recipe)
         with self.assertRaisesRegex(ContractError, "seed|algorithm"):
             validate_effect_recipe(recipe)
 
@@ -133,6 +240,7 @@ class ResolveRecipeContractTests(unittest.TestCase):
                 {"time": 4.9, "effect": "bloom"},
             ],
         }
+        recipe = self._complete_recipe(recipe)
         with self.assertRaisesRegex(ContractError, "seed"):
             validate_effect_recipe(recipe)
 
@@ -155,6 +263,7 @@ class ResolveRecipeContractTests(unittest.TestCase):
                 {"time": 8.3, "duration": 0.2, "effect": "bloom"},
             ],
         }
+        recipe = self._complete_recipe(recipe)
         with self.assertRaisesRegex(ContractError, "subject anchor"):
             validate_effect_recipe(recipe)
 
@@ -172,8 +281,26 @@ class ResolveRecipeContractTests(unittest.TestCase):
                 {"time": 8.3, "duration": 0.2, "effect": "bloom", "placement": self._placement()},
             ],
         }
+        recipe = self._complete_recipe(recipe)
         with self.assertRaisesRegex(ContractError, "subject anchor"):
             validate_effect_recipe(recipe)
+
+    def _complete_recipe(self, recipe):
+        recipe.update({
+            "dry_run": True,
+            "provider_calls": 0,
+            "provider_execution": False,
+        })
+        recipe.setdefault("timeline_duration", 10.0)
+        for event in recipe["events"]:
+            event.setdefault("duration", 0.2)
+            event.setdefault("placement", self._placement())
+            event.setdefault("evidence", {
+                "reference_sha256": "a" * 64,
+                "time": 0.5,
+                "source_duration": 6.0,
+            })
+        return recipe
 
     @staticmethod
     def _placement():
@@ -185,6 +312,31 @@ class ResolveRecipeContractTests(unittest.TestCase):
 
 
 class ProvenanceContractTests(unittest.TestCase):
+    def test_reference_evidence_times_must_be_finite_and_within_source_duration(self):
+        for field, unsafe in (
+            ("times", [float("nan")]),
+            ("times", [float("inf")]),
+            ("times", [True]),
+            ("times", [6.1]),
+            ("source_duration", float("nan")),
+            ("source_duration", float("inf")),
+            ("source_duration", True),
+        ):
+            with self.subTest(field=field, unsafe=unsafe):
+                evidence = {
+                    "reference_sha256": "a" * 64,
+                    "times": [0.5],
+                    "source_duration": 6.0,
+                }
+                evidence[field] = unsafe
+                payload = {"rules": [{
+                    "rule_id": "genre-1-materials",
+                    "rule": ["glass bloom"],
+                    "evidence": [evidence],
+                }]}
+                with self.assertRaisesRegex(ContractError, "time evidence|source duration"):
+                    validate_provenance(payload)
+
     def test_rule_without_reference_time_evidence_is_rejected(self):
         payload = {
             "rules": [{

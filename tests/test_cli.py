@@ -51,6 +51,57 @@ def run_cli(*args, expect=0):
 
 
 class CliTests(unittest.TestCase):
+    def test_missing_ffmpeg_or_ffprobe_is_bounded_without_traceback(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            reference = root / "reference.mov"
+            reference.write_bytes(b"local-reference")
+            config = root / "workflow.json"
+            config.write_text(json.dumps({
+                "schema_version": 1,
+                "run_id": "missing-tools",
+                "seed": 15,
+                "dry_run": True,
+                "resolve_duration": 6.0,
+                "genres": [{
+                    "number": 1,
+                    "slug": "flash-ethereal",
+                    "label": "Flash Ethereal",
+                    "references": [str(reference)],
+                    "signature": {
+                        "materials": ["glass"],
+                        "motion": ["flash"],
+                        "composition": ["center"],
+                        "avoid": ["mud"],
+                    },
+                }],
+            }), encoding="utf-8")
+            fake_bin = root / "bin"
+            fake_bin.mkdir()
+            ffprobe = fake_bin / "ffprobe"
+            ffprobe.write_text(
+                "#!/bin/sh\nprintf '%s\\n' "
+                "'{\"streams\":[{\"codec_type\":\"video\",\"duration\":\"1\","
+                "\"avg_frame_rate\":\"24/1\"}],\"format\":{\"duration\":\"1\"}}'\n",
+                encoding="utf-8",
+            )
+            ffprobe.chmod(0o700)
+
+            for label, path_value in (("ffprobe", ""), ("ffmpeg", str(fake_bin))):
+                with self.subTest(tool=label):
+                    proc = subprocess.run(
+                        [sys.executable, "-m", "tasteforge", "multimodal",
+                         "--config", str(config), "--out-dir", str(root / f"out-{label}")],
+                        capture_output=True,
+                        text=True,
+                        cwd=REPO_ROOT,
+                        env={"PATH": path_value},
+                        check=False,
+                    )
+                    self.assertEqual(proc.returncode, cli.EXIT_INVALID)
+                    self.assertEqual(proc.stderr, "ERROR local media processing unavailable\n")
+                    self.assertNotIn("Traceback", proc.stderr)
+
     def test_corrupt_media_process_failure_is_bounded_and_redacted(self):
         failure = subprocess.CalledProcessError(
             1,
