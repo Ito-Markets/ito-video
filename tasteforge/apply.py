@@ -10,6 +10,9 @@ EDL/FCPXML export. Provider generation fails closed (see :func:`apply_generate).
 from __future__ import annotations
 
 import random
+import math
+from fractions import Fraction
+from pathlib import Path
 from datetime import datetime, timezone
 from typing import Any
 
@@ -37,6 +40,64 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _positive(value: Any, label: str) -> float:
+    if isinstance(value, bool):
+        raise ValueError(f"{label} must be finite and positive")
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(f"{label} must be finite and positive") from exc
+    if not math.isfinite(number) or number <= 0:
+        raise ValueError(f"{label} must be finite and positive")
+    return number
+
+
+def _strict_assign(
+    planned: list[float], media: list[dict[str, Any]], target: float, fps: float
+) -> list[tuple[dict[str, Any], int]]:
+    """Fill the target frame count, then match whole shots to unique sources."""
+    target_frames = timeline.seconds_to_frames(target, fps)
+    if target_frames < 1:
+        raise ValueError("target duration must contain at least one frame")
+    frame_counts = []
+    elapsed = 0.0
+    assigned = 0
+    for duration in planned:
+        if assigned == target_frames:
+            break
+        elapsed += duration
+        boundary = min(target_frames, timeline.seconds_to_frames(elapsed, fps))
+        if boundary <= assigned:
+            raise ValueError("cadence shot cannot occupy a whole frame")
+        frame_counts.append(boundary - assigned)
+        assigned = boundary
+    if assigned < target_frames:
+        frame_counts.append(target_frames - assigned)
+
+    rate = timeline.fps_fraction(fps)
+    sources: dict[str, tuple[dict[str, Any], int]] = {}
+    for clip in media:
+        path = str(Path(clip["path"]).expanduser().resolve())
+        # Floor rational capacity: rounding up could read past the source end.
+        capacity = math.floor(Fraction(str(clip["duration"])) * rate)
+        # Accept a boundary serialized as a float only when the frame duration
+        # itself compares within the supplied duration; no broad epsilon.
+        if float((capacity + 1) / rate) <= clip["duration"]:
+            capacity += 1
+        if path in sources:
+            raise ValueError("no-repeat media must contain unique normalized source paths")
+        sources[path] = ({**clip, "path": path}, capacity)
+    if len(sources) < len(frame_counts):
+        raise ValueError("no-repeat plan requires more unique source clips")
+    assignments = []
+    for (clip, capacity), count in zip(sources.values(), frame_counts):
+        if capacity < count:
+            raise ValueError("source clip is too short for its no-repeat cadence slot")
+        assignments.append((clip, count))
+    return assignments
+
+
+
 def plan_shots(cadence: dict[str, Any], target_duration: float) -> list[float]:
     """Propose shot durations filling ``target_duration`` at this cadence.
 
@@ -44,13 +105,14 @@ def plan_shots(cadence: dict[str, Any], target_duration: float) -> list[float]:
     the recovered ``Cadence.plan_shots``) so the plan inherits rhythm
     variance instead of flattening into evenly spaced clips.
     """
+    target_duration = _positive(target_duration, "target duration")
     durations = [
-        s["duration"]
+        _positive(s["duration"], "cadence shot duration")
         for s in cadence.get("shots", [])
-        if isinstance(s, dict) and s.get("duration", 0) > _MIN_SHOT
+        if isinstance(s, dict) and _positive(s.get("duration"), "cadence shot duration") > _MIN_SHOT
     ]
     if not durations:
-        durations = [max(float(cadence.get("mean_shot") or 0.0), 1.0)]
+        durations = [max(_positive(cadence.get("mean_shot", 1.0), "mean shot duration"), 1.0)]
 
     rng = random.Random(7)  # deterministic, mirrors numpy default_rng(7)
     out: list[float] = []
@@ -73,8 +135,14 @@ def apply_local(
     media: list[dict[str, Any]],
     duration: float | None = None,
     fps: float | None = None,
+    no_repeat: bool = False,
 ) -> dict[str, Any]:
     """Plan a cut from the pack's cadence over local media clips.
+
+    With ``no_repeat=True``, normalized source paths are used at most once;
+    insufficient sources or source durations fail instead of repeating clips.
+    Strict plans fill the nearest whole-frame target and never exceed source
+    capacity. Media duration metadata must describe the available source.
 
     Returns an application report validated against
     ``schema.APPLICATION_REPORT_SCHEMA``. The report structurally cannot
@@ -85,41 +153,51 @@ def apply_local(
         raise ValueError("apply_local needs at least one media clip")
 
     cadence = sp.read_json(sp.cadence_path)
-    seq_fps = float(cadence.get("fps") or fps or _DEFAULT_FPS)
-
-    target = float(duration) if duration else sum(
-        float(c.get("duration") or 0.0) for c in media
-    )
-    if target <= 0:
-        raise ValueError("target duration must be positive (media durations or --duration)")
-
+    seq_fps = _positive(fps if fps is not None else cadence.get("fps", _DEFAULT_FPS), "fps")
+    validated_media = []
+    for clip in media:
+        if not isinstance(clip, dict) or not isinstance(clip.get("path"), (str, Path)):
+            raise ValueError("media clips require a local source path")
+        if not str(clip["path"]).strip():
+            raise ValueError("media clips require a local source path")
+        validated_media.append({**clip, "duration": _positive(clip.get("duration"), "media duration")})
+    target = _positive(duration if duration is not None else sum(
+        c["duration"] for c in validated_media
+    ), "target duration")
     planned = plan_shots(cadence, target)
+    assignments = _strict_assign(planned, validated_media, target, seq_fps) if no_repeat else [
+        (validated_media[i % len(validated_media)], max(1, timeline.seconds_to_frames(d, seq_fps)))
+        for i, d in enumerate(planned)
+    ]
 
     shots: list[dict[str, Any]] = []
     events: list[dict[str, Any]] = []
     clock = 0.0
-    for i, d in enumerate(planned):
-        clip = media[i % len(media)]
-        frames = max(1, timeline.seconds_to_frames(d, seq_fps))
+    offset_frames = 0
+    for i, (clip, frames) in enumerate(assignments):
+        d = float(frames / timeline.fps_fraction(seq_fps)) if no_repeat else planned[i]
+        clock = float(offset_frames / timeline.fps_fraction(seq_fps)) if no_repeat else clock
         events.append(
             {
                 "path": str(clip["path"]),
                 "name": str(clip.get("name") or clip["path"]),
-                "duration": round(d, 3),
+                "duration": d if no_repeat else round(d, 3),
                 "frames": frames,
-                "offset_frames": sum(e["frames"] for e in events),
+                "offset_frames": offset_frames,
                 "fps": seq_fps,
             }
         )
         shots.append(
             {
                 "index": i,
-                "start": round(clock, 3),
-                "end": round(clock + d, 3),
-                "duration": round(d, 3),
+                "start": clock if no_repeat else round(clock, 3),
+                "end": (float((offset_frames + frames) / timeline.fps_fraction(seq_fps))
+                        if no_repeat else round(clock + d, 3)),
+                "duration": d if no_repeat else round(d, 3),
             }
         )
         clock += d
+        offset_frames += frames
 
     report = {
         "schema_version": 1,
@@ -128,10 +206,10 @@ def apply_local(
         "mode": "local-deterministic",
         "dry_run": True,
         "provider": "none",
-        "target_duration": round(target, 3),
+        "target_duration": target if no_repeat else round(target, 3),
         "media": [
             {"path": str(c.get("path")), "duration": float(c.get("duration") or 0)}
-            for c in media
+            for c in validated_media
         ],
         "planned_shots": shots,
         "timeline_events": events,

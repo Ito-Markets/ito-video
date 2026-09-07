@@ -83,7 +83,9 @@ def cmd_apply(args: argparse.Namespace) -> int:
         return EXIT_FAIL_CLOSED
     sp = pack_mod.load(args.pack)
     media = json.loads(Path(args.media).read_text(encoding="utf-8"))["clips"]
-    report = apply_mod.apply_local(sp, media, duration=args.duration)
+    report = apply_mod.apply_local(
+        sp, media, duration=args.duration, fps=args.fps, no_repeat=args.no_repeat
+    )
     out = Path(args.out) if args.out else Path("out") / f"{sp.name}_apply_report.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
@@ -155,6 +157,10 @@ def build_parser() -> argparse.ArgumentParser:
                    help='JSON {"clips": [{"path", "duration", "name"?}]}')
     p.add_argument("--duration", type=float, default=None,
                    help="target seconds (default: sum of media durations)")
+    p.add_argument("--fps", type=float, default=None,
+                   help="sequence fps (overrides pack fps)")
+    p.add_argument("--no-repeat", action="store_true",
+                   help="use each source once; reject insufficient or short clips")
     p.add_argument("--out", help="output report path")
     p.add_argument("--live", action="store_true",
                    help="refused: provider generation fails closed")
