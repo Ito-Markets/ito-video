@@ -1,2 +1,2 @@
 # Reusable engine owned by ECC; immutable reviewed source revision.
-ecc-tasteforge @ git+https://github.com/affaan-m/ECC.git@1047b156c63e75972be8ea7861c7cdd179d93631#subdirectory=skills/taste-application/scripts
+ecc-tasteforge @ git+https://github.com/affaan-m/ECC.git@262feffe1f9a91c893c68877be0dff6fa442dbbf#subdirectory=skills/taste-application/scripts
