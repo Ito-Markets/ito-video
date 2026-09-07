@@ -16,7 +16,7 @@ from unittest import mock
 from tasteforge import cli
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-FIXTURE = REPO_ROOT / "tasteforge" / "fixtures" / "flashethereal"
+FIXTURE = Path(__import__("tasteforge").__file__).resolve().parent / "fixtures" / "flashethereal"
 
 ANSWERS = {
     "palette": "near-black void, bone white, violet bloom",

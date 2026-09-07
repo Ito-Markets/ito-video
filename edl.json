@@ -165,7 +165,7 @@
   },
   {
    "id": "p_ito",
-   "src": "/Users/affoon/Downloads/itovault/ito_vid.mp4",
+   "src": "footage://itovault/ito_vid.mp4",
    "in": 0.0,
    "out": 8.0,
    "speed": 1.0,
@@ -180,7 +180,7 @@
   },
   {
    "id": "f_founder1",
-   "src": "/Users/affoon/Downloads/rawtalkingclips/2026-05-26 01-31-25.mov",
+   "src": "footage://rawtalkingclips/2026-05-26 01-31-25.mov",
    "in": 0.0,
    "out": 6.0,
    "speed": 1.0,
@@ -195,7 +195,7 @@
   },
   {
    "id": "f_founder2",
-   "src": "/Users/affoon/Downloads/rawtalkingclips/IMG_0212.MOV",
+   "src": "footage://rawtalkingclips/IMG_0212.MOV",
    "in": 0.0,
    "out": 6.0,
    "speed": 1.0,
@@ -210,7 +210,7 @@
   },
   {
    "id": "f_founder3",
-   "src": "/Users/affoon/Downloads/rawtalkingclips/IMG_4763.MOV",
+   "src": "footage://rawtalkingclips/IMG_4763.MOV",
    "in": 0.0,
    "out": 6.0,
    "speed": 1.0,
@@ -225,7 +225,7 @@
   },
   {
    "id": "s_screen1",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 07-55-27_1.mp4",
+   "src": "footage://clipsfortaste/ScreenRecording_06-07-2026 07-55-27_1.mp4",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -240,7 +240,7 @@
   },
   {
    "id": "s_screen2",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-04-44_1.mp4",
+   "src": "footage://clipsfortaste/ScreenRecording_06-07-2026 08-04-44_1.mp4",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -255,7 +255,7 @@
   },
   {
    "id": "s_screen3",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-53-06_1.mp4",
+   "src": "footage://clipsfortaste/ScreenRecording_06-07-2026 08-53-06_1.mp4",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -270,7 +270,7 @@
   },
   {
    "id": "s_screen4",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 09-29-14_1.mp4",
+   "src": "footage://clipsfortaste/ScreenRecording_06-07-2026 09-29-14_1.mp4",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -285,7 +285,7 @@
   },
   {
    "id": "s_screen5",
-   "src": "/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 09-38-13_1.mp4",
+   "src": "footage://clipsfortaste/ScreenRecording_06-07-2026 09-38-13_1.mp4",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -405,7 +405,7 @@
   },
   {
    "id": "r_ito_intro",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/ito_markets_intro.mp4",
+   "src": "footage://allrawfootageunsorted/ito_markets_intro.mp4",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -420,7 +420,7 @@
   },
   {
    "id": "r_pov1",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-75_singular_display.mov",
+   "src": "footage://allrawfootageunsorted/video-75_singular_display.mov",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -435,7 +435,7 @@
   },
   {
    "id": "r_pov2",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/video-235_singular_display.mov",
+   "src": "footage://allrawfootageunsorted/video-235_singular_display.mov",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -450,7 +450,7 @@
   },
   {
    "id": "r_drone1",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/dji_export_20260604_094245_1780580565393_compose_0.mov",
+   "src": "footage://allrawfootageunsorted/dji_export_20260604_094245_1780580565393_compose_0.mov",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -465,7 +465,7 @@
   },
   {
    "id": "r_drone2",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/dji_export_20260604_101202_1780582322354_compose_0.mov",
+   "src": "footage://allrawfootageunsorted/dji_export_20260604_101202_1780582322354_compose_0.mov",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -480,7 +480,7 @@
   },
   {
    "id": "r_city1",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0225.MOV",
+   "src": "footage://allrawfootageunsorted/IMG_0225.MOV",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -495,7 +495,7 @@
   },
   {
    "id": "r_city2",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_0590.MOV",
+   "src": "footage://allrawfootageunsorted/IMG_0590.MOV",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,
@@ -510,7 +510,7 @@
   },
   {
    "id": "r_city3",
-   "src": "/Users/affoon/Downloads/allrawfootageunsorted/IMG_3842.MOV",
+   "src": "footage://allrawfootageunsorted/IMG_3842.MOV",
    "in": 0.0,
    "out": 5.0,
    "speed": 1.0,

@@ -3,17 +3,19 @@
 from __future__ import annotations
 
 import sys
-import unittest
 import tempfile
-from unittest.mock import Mock
+import unittest
 from pathlib import Path
+from unittest.mock import Mock
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-from tasteforge import apply as apply_mod, pack as pack_mod, schema, timeline  # noqa: E402
+from tasteforge import apply as apply_mod  # noqa: E402
+from tasteforge import pack as pack_mod  # noqa: E402
+from tasteforge import schema, timeline  # noqa: E402
 
-FIXTURE = REPO_ROOT / "tasteforge" / "fixtures" / "flashethereal"
+FIXTURE = Path(__import__("tasteforge").__file__).resolve().parent / "fixtures" / "flashethereal"
 
 MEDIA = {
     "clips": [

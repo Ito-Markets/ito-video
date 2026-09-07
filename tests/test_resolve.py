@@ -1,11 +1,12 @@
+# ruff: noqa: N802 -- fake methods preserve Resolve API names
 """Resolve adapter regression tests; no connection to Resolve is made."""
 
-import tempfile
 import json
-from unittest.mock import patch
-from types import SimpleNamespace
+import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from tasteforge.resolve import allocate_placements, apply_placements, probe_asset
 

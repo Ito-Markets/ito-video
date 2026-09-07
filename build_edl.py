@@ -3,7 +3,10 @@
 build_edl.py — generate a curated edl.json for the ItoMarkets brand film.
 Pulls from local footage and generated assets.
 """
+import argparse
 import json, os, subprocess
+from pathlib import Path
+from project_paths import footage_root, manifest_output
 
 BUILD = os.path.dirname(os.path.abspath(__file__))
 
@@ -34,6 +37,17 @@ def clip(id, src, t_in, t_out, section, family, rating, subject, grade, note):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--footage-root')
+    parser.add_argument('--output', default=os.path.join(BUILD, 'edl.json'))
+    parser.add_argument('--overwrite', action='store_true')
+    args = parser.parse_args()
+    root = footage_root(Path(BUILD), args.footage_root)
+    manifest_output(Path(args.output), args.overwrite)
+
+    def local(path):
+        return str(root / path.removeprefix('footage://')) if path.startswith('footage://') else path
+
     pool = []
 
     # Generated still clips
@@ -61,33 +75,33 @@ def main():
             pool.append(clip(id, src, 0.0, dur(os.path.join(BUILD, src)), sec, fam, rating, fam, grade, note))
 
     # ItoMarkets existing brand video
-    ito_vid = "/Users/affoon/Downloads/itovault/ito_vid.mp4"
-    if os.path.exists(ito_vid):
-        d = dur(ito_vid)
+    ito_vid = "footage://itovault/ito_vid.mp4"
+    if os.path.exists(local(ito_vid)):
+        d = dur(local(ito_vid))
         pool.append(clip("p_ito", ito_vid, 0.0, min(d, 8.0), "solution", "product", 4, "product", ["crush_black"], "ito brand video"))
 
     # Talking clips
     talking = [
-        ("/Users/affoon/Downloads/rawtalkingclips/2026-05-26 01-31-25.mov", "founder1"),
-        ("/Users/affoon/Downloads/rawtalkingclips/IMG_0212.MOV", "founder2"),
-        ("/Users/affoon/Downloads/rawtalkingclips/IMG_4763.MOV", "founder3"),
+        ("footage://rawtalkingclips/2026-05-26 01-31-25.mov", "founder1"),
+        ("footage://rawtalkingclips/IMG_0212.MOV", "founder2"),
+        ("footage://rawtalkingclips/IMG_4763.MOV", "founder3"),
     ]
     for i, (path, label) in enumerate(talking):
-        if os.path.exists(path):
-            d = dur(path)
+        if os.path.exists(local(path)):
+            d = dur(local(path))
             pool.append(clip(f"f_{label}", path, 0.0, min(d, 6.0), "solution", "founder", 3, "founder", ["crush_black"], f"talking clip {label}"))
 
     # Screen recordings / taste clips
     screens = [
-        ("/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 07-55-27_1.mp4", "screen1", "problem"),
-        ("/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-04-44_1.mp4", "screen2", "problem"),
-        ("/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 08-53-06_1.mp4", "screen3", "problem"),
-        ("/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 09-29-14_1.mp4", "screen4", "product"),
-        ("/Users/affoon/Downloads/clipsfortaste/ScreenRecording_06-07-2026 09-38-13_1.mp4", "screen5", "product"),
+        ("footage://clipsfortaste/ScreenRecording_06-07-2026 07-55-27_1.mp4", "screen1", "problem"),
+        ("footage://clipsfortaste/ScreenRecording_06-07-2026 08-04-44_1.mp4", "screen2", "problem"),
+        ("footage://clipsfortaste/ScreenRecording_06-07-2026 08-53-06_1.mp4", "screen3", "problem"),
+        ("footage://clipsfortaste/ScreenRecording_06-07-2026 09-29-14_1.mp4", "screen4", "product"),
+        ("footage://clipsfortaste/ScreenRecording_06-07-2026 09-38-13_1.mp4", "screen5", "product"),
     ]
     for path, label, sec in screens:
-        if os.path.exists(path):
-            d = dur(path)
+        if os.path.exists(local(path)):
+            d = dur(local(path))
             pool.append(clip(f"s_{label}", path, 0.0, min(d, 5.0), sec, "screen", 3, "screen", ["crush_black"], f"screen recording {label}"))
 
     # Free stock footage downloads
@@ -102,24 +116,24 @@ def main():
     ]
     for src, label, sec, rating in stock:
         path = os.path.join(BUILD, src)
-        if os.path.exists(path):
-            d = dur(path)
+        if os.path.exists(local(path)):
+            d = dur(local(path))
             pool.append(clip(f"st_{label}", src, 0.0, min(d, 5.0), sec, "stock", rating, "broll", ["crush_black"], f"free stock {label}"))
 
     # Raw footage selects — small subset of the best/unknown
     raw = [
-        ("/Users/affoon/Downloads/allrawfootageunsorted/ito_markets_intro.mp4", "ito_intro", "open"),
-        ("/Users/affoon/Downloads/allrawfootageunsorted/video-75_singular_display.mov", "pov1", "open"),
-        ("/Users/affoon/Downloads/allrawfootageunsorted/video-235_singular_display.mov", "pov2", "open"),
-        ("/Users/affoon/Downloads/allrawfootageunsorted/dji_export_20260604_094245_1780580565393_compose_0.mov", "drone1", "close"),
-        ("/Users/affoon/Downloads/allrawfootageunsorted/dji_export_20260604_101202_1780582322354_compose_0.mov", "drone2", "close"),
-        ("/Users/affoon/Downloads/allrawfootageunsorted/IMG_0225.MOV", "city1", "open"),
-        ("/Users/affoon/Downloads/allrawfootageunsorted/IMG_0590.MOV", "city2", "open"),
-        ("/Users/affoon/Downloads/allrawfootageunsorted/IMG_3842.MOV", "city3", "close"),
+        ("footage://allrawfootageunsorted/ito_markets_intro.mp4", "ito_intro", "open"),
+        ("footage://allrawfootageunsorted/video-75_singular_display.mov", "pov1", "open"),
+        ("footage://allrawfootageunsorted/video-235_singular_display.mov", "pov2", "open"),
+        ("footage://allrawfootageunsorted/dji_export_20260604_094245_1780580565393_compose_0.mov", "drone1", "close"),
+        ("footage://allrawfootageunsorted/dji_export_20260604_101202_1780582322354_compose_0.mov", "drone2", "close"),
+        ("footage://allrawfootageunsorted/IMG_0225.MOV", "city1", "open"),
+        ("footage://allrawfootageunsorted/IMG_0590.MOV", "city2", "open"),
+        ("footage://allrawfootageunsorted/IMG_3842.MOV", "city3", "close"),
     ]
     for path, label, sec in raw:
-        if os.path.exists(path):
-            d = dur(path)
+        if os.path.exists(local(path)):
+            d = dur(local(path))
             pool.append(clip(f"r_{label}", path, 0.0, min(d, 5.0), sec, "clip", 3, "broll", ["crush_black"], f"raw footage {label}"))
 
     edl = {
@@ -129,7 +143,7 @@ def main():
         "grade_base": "ito: deep contrast, warm-neutral highlights, cool shadows, subtle grain",
         "pool": pool
     }
-    with open(os.path.join(BUILD, "edl.json"), "w") as fh:
+    with open(args.output, "w") as fh:
         json.dump(edl, fh, indent=1)
     print(f"wrote edl.json with {len(pool)} selects")
 

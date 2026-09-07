@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tasteforge import distill, interview, schema  # noqa: E402
 
-FIXTURE = REPO_ROOT / "tasteforge" / "fixtures" / "flashethereal"
+FIXTURE = Path(__import__("tasteforge").__file__).resolve().parent / "fixtures" / "flashethereal"
 
 
 def _profile():
