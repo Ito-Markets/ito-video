@@ -10,7 +10,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
-FIXTURE = REPO_ROOT / "tasteforge" / "fixtures" / "flashethereal"
+FIXTURE = Path(__import__("tasteforge").__file__).resolve().parent / "fixtures" / "flashethereal"
 PROVENANCE_MD = REPO_ROOT / "PROVENANCE.md"
 
 
@@ -53,13 +53,11 @@ class ProvenanceDocTests(unittest.TestCase):
     def test_provenance_md_documents_lineage_and_exclusions(self):
         text = PROVENANCE_MD.read_text()
         self.assertIn("ef06a606d3b528fbd939b05fadc25bf6674073a1e05a01e3aa6b9c9416fd6284", text)
-        self.assertIn("/Users/affoon/Movies/Ito/tasteforge-flow-20260818", text)
-        self.assertIn("cse_01Tmgz8ezNwk64Zx7MUgsiUy", text)
         self.assertIn("look.cube", text)  # documented exclusion
         self.assertIn("fixtures/flashethereal", text)
 
     def test_readme_documents_operator_workflow(self):
-        readme = (REPO_ROOT / "tasteforge" / "README.md").read_text()
+        readme = (Path(__import__("tasteforge").__file__).resolve().parent / "README.md").read_text()
         for cmd in ("inspect", "validate", "interview", "distill", "apply", "export"):
             self.assertIn(cmd, readme)
 

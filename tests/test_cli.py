@@ -16,7 +16,7 @@ from unittest import mock
 from tasteforge import cli
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-FIXTURE = REPO_ROOT / "tasteforge" / "fixtures" / "flashethereal"
+FIXTURE = Path(__import__("tasteforge").__file__).resolve().parent / "fixtures" / "flashethereal"
 
 ANSWERS = {
     "palette": "near-black void, bone white, violet bloom",
@@ -193,6 +193,36 @@ class CliTests(unittest.TestCase):
             self.assertEqual(proc.returncode, 0, proc.stderr)
             self.assertTrue((Path(td) / "cli-test.edl").exists())
             self.assertTrue((Path(td) / "cli-test.fcpxml").exists())
+
+    def test_apply_strict_cli_emits_exact_frame_report(self):
+        with tempfile.TemporaryDirectory() as td:
+            media = {"clips": [{"path": f"/tmp/clip-{i}.mov", "duration": 5}
+                               for i in range(20)]}
+            media_p = Path(td) / "media.json"
+            media_p.write_text(json.dumps(media))
+            out = Path(td) / "report.json"
+            proc = run_cli("apply", "--pack", str(FIXTURE), "--media", str(media_p),
+                           "--duration", "2.25", "--fps", "20", "--no-repeat", "--out", str(out))
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            report = json.loads(out.read_text())
+            events = report["timeline_events"]
+            self.assertEqual(sum(e["frames"] for e in events), 45)
+            self.assertTrue(all(e["fps"] == 20 for e in events))
+            self.assertEqual(len(events), len({e["path"] for e in events}))
+
+    def test_apply_invalid_or_insufficient_strict_input_creates_no_report(self):
+        with tempfile.TemporaryDirectory() as td:
+            media_p = Path(td) / "media.json"
+            media_p.write_text(json.dumps(MEDIA))
+            out = Path(td) / "report.json"
+            for options in (("--duration", "20", "--no-repeat"),
+                            ("--duration", "0"), ("--fps", "nan")):
+                with self.subTest(options=options):
+                    proc = run_cli("apply", "--pack", str(FIXTURE), "--media", str(media_p),
+                                   "--out", str(out), *options)
+                    self.assertEqual(proc.returncode, 1, proc.stderr)
+                    self.assertNotIn("Traceback", proc.stderr)
+                    self.assertFalse(out.exists())
 
     def test_live_provider_flags_fail_closed(self):
         with tempfile.TemporaryDirectory() as td:

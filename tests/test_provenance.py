@@ -17,9 +17,9 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tasteforge import provenance  # noqa: E402
 
-CANONICAL = "/Users/affoon/Movies/Ito/tasteforge-flow-20260818"
+CANONICAL = "recovered/tasteforge-flow-20260818"
 LATEST_SHA = "ef06a606d3b528fbd939b05fadc25bf6674073a1e05a01e3aa6b9c9416fd6284"
-SESSION = "cse_01Tmgz8ezNwk64Zx7MUgsiUy"
+SESSION = "redacted-local-session"
 
 
 class LineageTests(unittest.TestCase):

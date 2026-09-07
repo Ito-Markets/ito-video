@@ -4,13 +4,14 @@ build_ito.py — narrative assembler for the ItoMarkets institutional brand film
 1920x1080, 30fps, zero-repeat scheduler.
 Reads edl.json, renders each select with motion + grade, concatenates to out/rough_cut.mp4.
 """
+import argparse
 import json, os, subprocess
+from pathlib import Path
+from project_paths import footage_root, resolve_source, protect_output
 
 BUILD = os.path.dirname(os.path.abspath(__file__))
 TRIMS = os.path.join(BUILD, "trims")
 OUT = os.path.join(BUILD, "out")
-os.makedirs(TRIMS, exist_ok=True)
-os.makedirs(OUT, exist_ok=True)
 
 edl = json.load(open(os.path.join(BUILD, "edl.json")))
 POOL = {s["id"]: s for s in edl["pool"]}
@@ -31,16 +32,12 @@ SECTIONS = [
 ]
 
 
+FOOTAGE_ROOT = None
+
+
 def resolve_src(s):
-    src = s["src"]
-    if src.startswith("/"):
-        return src
-    # Try relative to project root, then to assets/raw/
-    for base in [BUILD, os.path.join(BUILD, "assets", "raw")]:
-        p = os.path.join(base, src)
-        if os.path.exists(p):
-            return p
-    return os.path.join(BUILD, src)
+    root = FOOTAGE_ROOT or footage_root(Path(BUILD))
+    return str(resolve_source(s["src"], Path(BUILD), root))
 
 
 def pick_for_section(used, used_src, sec_name, prefs):
@@ -99,10 +96,12 @@ def render(s, idx, T, out_path):
     src = resolve_src(s)
     if not os.path.exists(src):
         print(f"  MISSING {src}")
-        return False
+        return False, "Source media is missing"
 
     # Materialize iCloud/evicted files before ffmpeg
-    subprocess.run(["bash", "-c", f"cat '{src}' >/dev/null 2>&1"])
+    with open(src, "rb") as source_file:
+        while source_file.read(1024 * 1024):
+            pass
 
     t_in = s["in"]
     avail = max(0.2, s["out"] - s["in"] - 0.05)
@@ -132,6 +131,27 @@ def render(s, idx, T, out_path):
 
 
 def main():
+    global FOOTAGE_ROOT
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--footage-root')
+    parser.add_argument('--overwrite', action='store_true')
+    args = parser.parse_args()
+    FOOTAGE_ROOT = footage_root(Path(BUILD), args.footage_root)
+    for directory in (Path(TRIMS), Path(OUT)):
+        if directory.is_symlink():
+            raise ValueError('Output directories must not be symbolic links')
+    if Path(TRIMS).is_dir() and any(p.is_symlink() for p in Path(TRIMS).iterdir()):
+        raise ValueError('Existing trim outputs must not be symbolic links')
+    for source in edl['pool']:
+        source_path = Path(resolve_src(source))
+        if source_path.is_relative_to(Path(TRIMS).resolve()) or source_path == (Path(OUT) / 'rough_cut.mp4').resolve():
+            raise ValueError('Source media overlaps a render output; move outputs first')
+    protect_output(Path(OUT) / 'rough_cut.mp4', args.overwrite)
+    protect_output(Path(BUILD) / 'concat.txt', args.overwrite)
+    if not args.overwrite and Path(TRIMS).exists() and any(Path(TRIMS).iterdir()):
+        raise FileExistsError('Trims already exist; use --overwrite explicitly')
+    os.makedirs(TRIMS, exist_ok=True)
+    os.makedirs(OUT, exist_ok=True)
     used = set()
     used_src = set()
     timeline = []
@@ -180,7 +200,7 @@ def main():
 
     concat_file = os.path.join(BUILD, "concat.txt")
     open(concat_file, "w").write("\n".join(
-        f"file '{os.path.join(TRIMS, f'{i:03d}_{sec}_{sid}.mp4')}'"
+        f"file 'trims/{i:03d}_{sec}_{sid}.mp4'"
         for i, (sec, sid, _) in enumerate(timeline)
     ) + "\n")
 

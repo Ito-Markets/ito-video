@@ -3,15 +3,13 @@
 scan_sources.py — scan the provided source folders and generate an initial edl.json.
 Only writes duration and basic metadata; ratings/sections/notes are filled in later.
 """
-import json, os, subprocess, sys
+import argparse
+import json, os, subprocess
+from pathlib import Path
+from project_paths import footage_root, portable_source, manifest_output
 
 BUILD = os.path.dirname(os.path.abspath(__file__))
-FOLDERS = [
-    "/Users/affoon/Downloads/allrawfootageunsorted",
-    "/Users/affoon/Downloads/clipsfortaste",
-    "/Users/affoon/Downloads/itovault",
-    "/Users/affoon/Downloads/rawtalkingclips",
-]
+FOLDER_NAMES = ["allrawfootageunsorted", "clipsfortaste", "itovault", "rawtalkingclips"]
 
 # Placeholder tags per filename pattern
 FAMILY_HINTS = {
@@ -60,10 +58,17 @@ def classify(name):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--footage-root')
+    parser.add_argument('--output', default=os.path.join(BUILD, 'edl.json'))
+    parser.add_argument('--overwrite', action='store_true')
+    args = parser.parse_args()
+    root = footage_root(Path(BUILD), args.footage_root)
+    manifest_output(Path(args.output), args.overwrite)
     pool = []
     idx = 0
     seen = set()
-    for folder in FOLDERS:
+    for folder in [root / name for name in FOLDER_NAMES]:
         if not os.path.isdir(folder):
             continue
         for f in sorted(os.listdir(folder)):
@@ -75,7 +80,7 @@ def main():
             dur = duration(p)
             if dur < 0.5:
                 continue
-            rel = p
+            rel = portable_source(Path(p), root)
             family, section = classify(f)
             pool.append({
                 "id": f"s{idx:03d}",
@@ -100,7 +105,7 @@ def main():
         "grade_base": "ito: deep contrast, warm-neutral highlights, cool shadows, subtle grain",
         "pool": pool
     }
-    out_path = os.path.join(BUILD, "edl.json")
+    out_path = args.output
     with open(out_path, "w") as fh:
         json.dump(edl, fh, indent=1)
     print(f"wrote {out_path}: {len(pool)} selects")
